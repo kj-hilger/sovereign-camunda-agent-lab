@@ -1,12 +1,8 @@
 # Sovereign Camunda Agent Lab 🚀
 
-<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-  <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
-    <img src="docs/jetson.jpg" alt="Jetson Orin Nano" style="width: 100%; height: auto;">
-  </div>
-  <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
-    <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" style="width: 100%; height: auto;">
-  </div>
+<div align="center">
+  <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="48%" style="max-width: 48%; display: inline-block;" />
+  <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="48%" style="max-width: 48%; display: inline-block;" />
 </div>
 
 ## ⚡ Summary
