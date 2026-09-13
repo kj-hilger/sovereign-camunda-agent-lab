@@ -1,18 +1,14 @@
 # Sovereign Camunda Agent Lab 🚀
 
-<div align="center">
-  <table>
-    <tr>
-      <td width="50%" align="center">
-        <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="100%">
-        <br><sub><b>Hardware:</b> NVIDIA Jetson Orin Nano (Edge AI)</sub>
-      </td>
-      <td width="50%" align="center">
-        <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="100%">
-        <br><sub><b>Software Architecture Stack</b></sub>
-      </td>
-    </tr>
-  </table>
+<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
+  <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
+    <img src="docs/jetson.jpg" alt="Jetson Orin Nano" style="width: 100%; height: auto;">
+    <br><sub><b>Hardware:</b> NVIDIA Jetson Orin Nano (Edge AI)</sub>
+  </div>
+  <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
+    <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" style="width: 100%; height: auto;">
+    <br><sub><b>Software Architecture Stack</b></sub>
+  </div>
 </div>
 
 **Table of Contents**
