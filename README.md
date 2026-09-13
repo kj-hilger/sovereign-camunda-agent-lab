@@ -1,9 +1,9 @@
 # Sovereign Camunda Agent Lab 🚀
 
-<div align="center">
-  <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="48%" style="max-width: 48%; display: inline-block;" />
-  <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="48%" style="max-width: 48%; display: inline-block;" />
-</div>
+<p align="center">
+  <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="380" style="vertical-align: middle; max-width: 100%;" />
+  <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="380" style="vertical-align: middle; max-width: 100%;" />
+</p>
 
 ## ⚡ Summary
 
@@ -19,9 +19,9 @@
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
 * [🏗 Sovereign Infra](#-sovereign-infra)
-* [♾️ Cluster GitOps](#%EF%B8%8F-cluster-gitops)
-* [⚙️ Camunda Process](#%EF%B8%8F-camunda-process)
-* [💻 Alternative Profile for High Power Desktop](#-alternative-profile-for-high-power-desktop)
+* [♾️ Cluster GitOps](#cluster-gitops)
+* [⚙️ Camunda Process](#camunda-process)
+* [💻 Alternative Profile for High Power Desktop](#alternative-profile-for-high-power-desktop)
 
 ---
 
