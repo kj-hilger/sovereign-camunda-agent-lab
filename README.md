@@ -19,9 +19,9 @@
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
 * [🏗 Sovereign Infra](#-sovereign-infra)
-* [♾️ Cluster GitOps](#%EF%B8%8F-cluster-gitops)
-* [⚙️ Camunda Process](#%EF%B8%8F-camunda-process)
-* [💻 Alternative Profile for High Power Desktop](#-alternative-profile-for-high-power-desktop)
+* [♾️ Cluster GitOps](#cluster-gitops)
+* [⚙️ Camunda Process](#camunda-process)
+* [💻 Alternative Profile for High Power Desktop](#alternative-profile-for-high-power-desktop)
 
 ---
 
