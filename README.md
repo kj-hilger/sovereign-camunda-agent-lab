@@ -3,33 +3,31 @@
 <div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
   <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
     <img src="docs/jetson.jpg" alt="Jetson Orin Nano" style="width: 100%; height: auto;">
-    <br><sub><b>Hardware:</b> NVIDIA Jetson Orin Nano (Edge AI)</sub>
   </div>
   <div style="flex: 1; min-width: 280px; max-width: 500px; text-align: center;">
     <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" style="width: 100%; height: auto;">
-    <br><sub><b>Software Architecture Stack</b></sub>
   </div>
 </div>
-
-**Table of Contents**
-* [⚡ Summary](#-summary)
-* [🚀 Roadmap & Phases](#-roadmap--phases)
-* [⚠️ Known Limitations & Architectural Caveats](#️-known-limitations--architectural-caveats)
-* [📋 Prerequisites](#-prerequisites)
-* [🏗 Sovereign Infra](#-sovereign-infra)
-* [♾️ Cluster GitOps](#️-cluster-gitops)
-* [⚙️ Camunda Process](#%EF%B8%8F-camunda-process)
-* [💻 Alternative Profile for High Power Desktop](#-alternative-profile-for-high-power-desktop)
-
----
 
 ## ⚡ Summary
 
 * A lightweight, ephemeral DevOps lab for rapidly spinning up and tearing down Camunda 8, Ollama, and Keycloak on edge devices.
 * Demonstrates core enterprise patterns — including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability — each implemented in its simplest form.
 * Designed to run and observe Camunda Agentic AI BPMN processes while simulating enterprise workflows like GitOps scaling and disaster recovery.
-* Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based), assuming a dedicated device that can be easily wiped and reprovisioned.
+* Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based edge device), assuming a dedicated device that can be easily wiped and reprovisioned.
 * A high-power desktop profile is also provided for development, but caution is advised: its host-level configuration scripts are highly invasive and intended for disposable or dedicated hardware only.
+
+**Table of Contents**
+* [⚡ Summary](#-summary)
+* [🚀 Roadmap & Phases](#-roadmap--phases)
+* [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
+* [📋 Prerequisites](#-prerequisites)
+* [🏗 Sovereign Infra](#-sovereign-infra)
+* [♾️ Cluster GitOps](#%EF%B8%8F-cluster-gitops)
+* [⚙️ Camunda Process](#%EF%B8%8F-camunda-process)
+* [💻 Alternative Profile for High Power Desktop](#-alternative-profile-for-high-power-desktop)
+
+---
 
 ### 🚀 Roadmap & Phases
 
@@ -37,6 +35,7 @@
 - **Cluster Gitops:** under development
 - **Camunda Process:** planned
 
+---
 
 ### ⚠️ Known Limitations & Architectural Caveats
 
@@ -46,6 +45,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 * **Kubernetes Heterogeneity:** Uses Minikube for Desktop and K3s for Edge. *Planned: Standardizing on K3s across all profiles.*
 * **Resource Constraints (Edge):** Camunda 8 together with local LLMs requires significant memory. Edge profiles require aggressive resource tuning to avoid OOM issues.
 
+---
 
 ## 📋 Prerequisites
 - **OS:** Debian-based Linux with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`).
@@ -57,6 +57,8 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
+
+---
 
 ## 🏗 Sovereign Infra
 
@@ -106,6 +108,7 @@ chmod +x ./sovereign-infra/k3s-uninstall.sh  # **⚠️ deletes all content unde
 # run bootstrap script again
 ```
 
+---
 
 ## ♾️Cluster GitOps
 
@@ -141,6 +144,7 @@ chmod +x ./cluster-gitops/uninstall.sh
 ./cluster-gitops/uninstall.sh
 ```
 
+---
 
 ## ⚙️Camunda Process
 
@@ -164,6 +168,7 @@ Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows
 *   **Tool Calls:** Precise logging of which internal/external tools or APIs the agent invoked.
 *   **Memory Context:** A snapshot of short-term and long-term memory state at the moment of decision.
 
+---
 
 ## Alternative Profile for High Power Desktop
 
@@ -212,13 +217,13 @@ minikube delete --all --purge
 | 5    | Bootstrapping Minikube (Tuning)                                            | Enforces Docker runtime internally within the cluster to allow `--gpus=all`. **⚠️Allocates 32768 MB RAM and 12 CPUs. ⚠**                                                                            |
 | 6    | Installing ArgoCD                                                          | `--server-side` apply required, adds a desktop-specific patch to `NodePort` for direct access via the local web browser.                                                                             |
 
+---
 
 ## 📄Docs
 
 - Architectural diagrams
 - Architectural decisions
 - Pictures
-
 
 ---
 
