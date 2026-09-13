@@ -1,23 +1,50 @@
-# Sovereign Camunda Agent Stack 🚀
+# Sovereign Camunda Agent Lab 🚀
 
 <div align="center">
-  <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="100%">
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="100%">
+        <br><sub><b>Hardware:</b> NVIDIA Jetson Orin Nano (Edge AI)</sub>
+      </td>
+      <td width="50%" align="center">
+        <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="100%">
+        <br><sub><b>Software Architecture Stack</b></sub>
+      </td>
+    </tr>
+  </table>
 </div>
+
+**Table of Contents**
+* [⚡ Summary](#-summary)
+* [🚀 Roadmap & Phases](#-roadmap--phases)
+* [⚠️ Known Limitations & Architectural Caveats](#️-known-limitations--architectural-caveats)
+* [📋 Prerequisites](#-prerequisites)
+* [🏗 Sovereign Infra](#-sovereign-infra)
+* [♾️ Cluster GitOps](#️-cluster-gitops)
+* [⚙️ Camunda Process](#%EF%B8%8F-camunda-process)
+* [💻 Alternative Profile for High Power Desktop](#-alternative-profile-for-high-power-desktop)
+
+---
 
 ## ⚡ Summary
 
-A lightweight, ephemeral DevOps lab stack for rapidly spinning up and tearing down Camunda 8, Ollama, and Keycloak. It demonstrates core enterprise patterns — including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability — each implemented in their simplest form. Use it to simulate production workflows like GitOps scaling and disaster recovery. Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based Edge AI), with alternative scripts and profiles provided for high-power development desktops.
+* A lightweight, ephemeral DevOps lab for rapidly spinning up and tearing down Camunda 8, Ollama, and Keycloak on edge devices.
+* Demonstrates core enterprise patterns — including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability — each implemented in its simplest form.
+* Designed to run and observe Camunda Agentic AI BPMN processes while simulating enterprise workflows like GitOps scaling and disaster recovery.
+* Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based), assuming a dedicated device that can be easily wiped and reprovisioned.
+* A high-power desktop profile is also provided for development, but caution is advised: its host-level configuration scripts are highly invasive and intended for disposable or dedicated hardware only.
 
-## 🚀 Roadmap & Phases
+### 🚀 Roadmap & Phases
 
 - **Sovereign Infra:** under test
 - **Cluster Gitops:** under development
 - **Camunda Process:** planned
 
 
-## ⚠️ Known Limitations & Architectural Caveats
+### ⚠️ Known Limitations & Architectural Caveats
 
-While this stack serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
+While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
 * **Host-Level Bootstrapping:** Installation scripts currently modify host configurations directly (e.g., Docker daemon, CNI).
 * **Kubernetes Heterogeneity:** Uses Minikube for Desktop and K3s for Edge. *Planned: Standardizing on K3s across all profiles.*
@@ -32,45 +59,21 @@ While this stack serves as a rapid local DevOps lab for the enterprise patterns 
 - **Connectivity:** Internet access is required during the bootstrap process.
 - **Repository:** You cloned the repo:
 ```bash
-git clone https://github.com/kj-hilger/sovereign-camunda-agent-stack.git
+git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
 
 ## 🏗 Sovereign Infra
 
-Scripts to install hardware specific tools for NVIDIA GPU Acceleration, K8s and GitOps on different hardware profiles:
-
-### Choose your profile
-
-| Environment            | Specs (Tested)                           | Use Case                                               |
-|:-----------------------|:-----------------------------------------|:-------------------------------------------------------|
-| **High-Power Desktop** | 64 GB RAM / 16 GB VRAM (RTX)             | Development, Heavy Load Testing, Large LLMs            |
-| **Edge AI (Jetson)**   | 16 GB Unified Memory (Orin Nano)         | Industrial Edge, Power-Efficient continuous operations |
+Scripts to install tools for NVIDIA GPU Acceleration, K8s and GitOps.
 
 ### Bootstrap
 
 ```bash
-### Option A: High-Power Desktop
-chmod +x ./sovereign-infra/install-desktop.sh
-./sovereign-infra/install-desktop.sh
-
-## Option B: Edge AI Jetson
-
 chmod +x ./sovereign-infra/install-jetson.sh
 ./sovereign-infra/install-jetson.sh
 ```
 
-#### Detailed documentation for Desktop
-
-| Step | Description                                                                | Key Challenges                                                                                                                                                                                       |
-|------|----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | NVIDIA Driver & CUDA Check                                                 | Drivers and CUDA toolkit must be manually installed on the host OS beforehand.                                                                                                                       |
-| 2    | Installing & Configuring Docker                                            | Non-root user permissions require group modifications (`usermod`), often needing a full system logout/login before the user can interact with the Docker daemon.                                     |
-| 3    | NVIDIA Container Toolkit Config                                            | Must target the **host Docker engine** specifically via direct `/etc/docker/daemon.json` configuration, **⚠️ overwrites existing ⚠**, ensuring GPU runtime sharing into downstream containers.      |
-| 4    | Installing Minikube & Helm                                                 | Requires a separate, native `kubectl` installation on the host OS to prevent command-not-found errors during automated script execution.                                                             |
-| 5    | Bootstrapping Minikube (Tuning)                                            | Enforces Docker runtime internally within the cluster to allow `--gpus=all`. **⚠️Allocates 32768 MB RAM and 12 CPUs. ⚠**                                                                            |
-| 6    | Installing ArgoCD                                                          | `--server-side` apply required, adds a desktop-specific patch to `NodePort` for direct access via the local web browser.                                                                             |
-
-#### Detailed documentation for Jetson
+#### Detailed documentation
 
 | Step | Description                                                                | Key Challenges                                                                                                                                                                                        |
 |------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -85,41 +88,20 @@ chmod +x ./sovereign-infra/install-jetson.sh
 
 
 ### Post-Installation
-* The installation configures Docker to run without `sudo` for the current user. If you encounter permission issues during the Minikube bootstrap, you may need to **log out and log back in** to apply the user group changes.
-* Docker and NVIDIA Toolkit will be updated via apt Package Manager.
+* The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-### Option A: High-Power Desktop
-# No check script currently available for desktop.
-
-## Option B: Edge AI Jetson
 chmod +x ./sovereign-infra/check-jetson.sh
 ./sovereign-infra/check-jetson.sh
 ```
+* Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 
 ### Start again after reboot
-
-```bash
-### Option A: High-Power Desktop
-minikube start \
---driver=docker \
---cpus=12 \
---memory=32768 \
---gpus=all \
---addons=ingress
-
-## Option B: Edge AI Jetson
-# K3s starts automatically via systemd service.
-```
+* K3s starts automatically via systemd service.
 
 ### Delete All and Reinstall (with latest software versions)
 
 ```bash
-### Option A: High-Power Desktop
-chmod +x ./sovereign-infra/uninstall-desktop.sh
-./sovereign-infra/uninstall-desktop.sh
-
-## Option B: Edge AI Jetson
 chmod +x ./sovereign-infra/k3s-uninstall.sh  # **⚠️ deletes all content under /var/lib/docker ⚠️**
 ./sovereign-infra/k3s-uninstall.sh
 
@@ -131,7 +113,7 @@ chmod +x ./sovereign-infra/k3s-uninstall.sh  # **⚠️ deletes all content unde
 
 ## ♾️Cluster GitOps
 
-GitOps App-of-Apps Helm-Charts and scripts to install the Camunda 8 (including Camunda Agentic AI Connector, PostgreSQL, Keycloak) and Ollama (including local LLM) self-managed on top of the Sovereign Infra layer. You can choose hardware profile specific values and have air-gapped Data Sovereignty at runtime.
+GitOps App-of-Apps Helm-Charts and scripts to install the Camunda 8 (including Camunda Agentic AI Connector, PostgreSQL, Keycloak) and Ollama (including local LLM) self-managed on top of the Sovereign Infra layer. You have air-gapped Data Sovereignty at runtime.
 
 ### Bootstrap
 
@@ -161,15 +143,12 @@ ArgoCD monitors the apps and charts directories alongside the Chart.lock files. 
 ```bash
 chmod +x ./cluster-gitops/uninstall.sh
 ./cluster-gitops/uninstall.sh
-
-# Alternative for desktop
-minikube delete --all --purge
 ```
 
 
 ## ⚙️Camunda Process
 
-Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop". This layer is equal for all hardware profiles.
+Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop".
 
 ### Bootstrap
 
@@ -188,6 +167,54 @@ Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows
 *   **Reasoning Path:** Exposure of intermediate "Chain of Thought" (CoT) and logic steps.
 *   **Tool Calls:** Precise logging of which internal/external tools or APIs the agent invoked.
 *   **Memory Context:** A snapshot of short-term and long-term memory state at the moment of decision.
+
+
+## Alternative Profile for High Power Desktop
+
+| Environment            | Specs (Tested)                           | Use Case                                               |
+|:-----------------------|:-----------------------------------------|:-------------------------------------------------------|
+| **High-Power Desktop** | 64 GB RAM / 16 GB VRAM (RTX)             | Development, Heavy Load Testing, Large LLMs            |
+| **Edge AI (Jetson)**   | 16 GB Unified Memory (Orin Nano)         | Industrial Edge, Power-Efficient continuous operations |
+
+```
+chmod +x ./sovereign-infra/install-desktop.sh
+./sovereign-infra/install-desktop.sh
+
+# No check script currently available for desktop.
+
+# Delete All and reinstall
+chmod +x ./sovereign-infra/uninstall-desktop.sh
+./sovereign-infra/uninstall-desktop.sh
+
+# reboot
+
+# run bootstrap script again
+
+# Start again after reboot
+minikube start \
+--driver=docker \
+--cpus=12 \
+--memory=32768 \
+--gpus=all \
+--addons=ingress
+
+# Delete All
+minikube delete --all --purge
+
+# Camunda
+# This layer is equal for all hardware profiles.
+```
+
+### Detailed documentation for Desktop
+
+| Step | Description                                                                | Key Challenges                                                                                                                                                                                       |
+|------|----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | NVIDIA Driver & CUDA Check                                                 | Drivers and CUDA toolkit must be manually installed on the host OS beforehand.                                                                                                                       |
+| 2    | Installing & Configuring Docker                                            | Non-root user permissions require group modifications (`usermod`), often needing a full system logout/login before the user can interact with the Docker daemon.                                     |
+| 3    | NVIDIA Container Toolkit Config                                            | Must target the **host Docker engine** specifically via direct `/etc/docker/daemon.json` configuration, **⚠️ overwrites existing ⚠**, ensuring GPU runtime sharing into downstream containers.      |
+| 4    | Installing Minikube & Helm                                                 | Requires a separate, native `kubectl` installation on the host OS to prevent command-not-found errors during automated script execution.                                                             |
+| 5    | Bootstrapping Minikube (Tuning)                                            | Enforces Docker runtime internally within the cluster to allow `--gpus=all`. **⚠️Allocates 32768 MB RAM and 12 CPUs. ⚠**                                                                            |
+| 6    | Installing ArgoCD                                                          | `--server-side` apply required, adds a desktop-specific patch to `NodePort` for direct access via the local web browser.                                                                             |
 
 
 ## 📄Docs
