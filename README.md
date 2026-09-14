@@ -7,9 +7,9 @@
 
 ## ⚡ Summary
 
-* Lightweight, ephemeral DevOps lab for rapidly spinning up and tearing down a Camunda 8 Agentic AI process application together with an LLM provider.
-* Built on core enterprise patterns, including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability.
+* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on Jetson Orin Nano. 
 * Designed to run and observe enterprise workflows like GitOps scaling and disaster recovery on Kubernetes or optimizing Agentic AI Tool Calls.
+* Monorepo built on core enterprise patterns, including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability.
 * Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based edge device), assuming a dedicated device that can be easily wiped and reprovisioned.
 * A high-power desktop profile is also provided for development, but caution is advised: its host-level configuration scripts are highly invasive and intended for disposable or dedicated hardware only.
 
