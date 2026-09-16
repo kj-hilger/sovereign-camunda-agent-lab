@@ -1,0 +1,40 @@
+  image:
+    repository: postgres
+    tag: "18.11"
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  storage:
+    size: 10Gi
+
+  global:
+    postgresql:
+      image:
+        tag: "18.11"
+        registry: docker.io
+
+  postgresql:
+    auth:
+      enabled: true
+      pgHbaConfiguration: |
+        local   all             all                                     trust
+        host    all             all             127.0.0.1/32            trust
+        host    all             all             0.0.0.0/0               trust
+    persistence:
+      size: 10Gi
+
+  primary:
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+
+  imagePullPolicy: IfNotPresent

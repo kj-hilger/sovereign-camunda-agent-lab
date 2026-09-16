@@ -1,0 +1,13 @@
+apiVersion: v2
+name: camunda8-wrapper
+description: |
+  Wrapper chart for the sovereign Camunda Agent Lab.
+  Configures Camunda 8.
+type: application
+version: 1.0.0
+appVersion: "8.9.0"
+
+dependencies:
+  - name: camunda-platform
+    version: 14.10.0
+    repository: https://helm.camunda.io

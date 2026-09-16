@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ollama-wrapper
+description: |
+  Wrapper chart for the sovereign Camunda Agent Lab.
+  Configures Ollama.
+type: application
+version: 1.0.0
+appVersion: 0.34.0
+dependencies:
+- name: ollama
+  version: 1.81.0
+  repository: https://helm.otwld.com
+
