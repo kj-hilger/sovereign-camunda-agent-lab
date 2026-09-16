@@ -1,0 +1,34 @@
+# Up-to-date image with ARM64 / Jetson CUDA support
+image:
+  repository: ollama/ollama
+  tag: "0.5.11"
+  pullPolicy: IfNotPresent
+
+# Resources tailored specifically for Jetson Orin Nano (Unified/Shared Memory)
+resources:
+  requests:
+    cpu: 1000m         # Sufficient allocation as GPU handles inference
+    memory: 1500Mi    # Safe baseline for Ollama + Qwen 0.5B
+  limits:
+    cpu: 2000m        # CPU burst allowance for request parsing/preprocessing
+    memory: 2500Mi    # Keeps request and limit close to prevent OOM kills
+
+# Ollama runtime tuning for edge devices
+env:
+  # Restricts KV-cache memory growth by enforcing single-request handling
+  - name: OLLAMA_NUM_PARALLEL
+    value: "1"
+  # Prevents repeated unloading/reloading from flash storage
+  - name: OLLAMA_KEEP_ALIVE
+    value: "24h"
+  # Keeps log output clean for production
+  - name: OLLAMA_DEBUG
+    value: "0"
+
+# Jetson / L4T GPU Support
+nvidiaRuntime:
+  enabled: true
+
+# Lightweight model selected for fast response times on Jetson
+models:
+  - qwen2.5:0.5b

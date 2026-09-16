@@ -1,0 +1,50 @@
+image:
+  repository: camunda/camunda-platform
+  tag: "8.9.0"
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 3000m
+    memory: 2500Mi
+  requests:
+    cpu: 1250m
+    memory: 1000Mi
+
+camunda-platform:
+  global:
+    image:
+      tag: "8.9.0"
+
+  orchestration:
+    clusterSize: "1"
+    partitionCount: "1"
+    replicationFactor: "1"
+    exporters:
+      camunda:
+        enabled: false
+      rdbms:
+        enabled: true
+    data:
+      secondaryStorage:
+        type: rdbms
+    resources:
+      limits:
+        cpu: "2500m"
+        memory: "1500Mi"
+      requests:
+        cpu: "750m"
+        memory: "1000Mi"
+    env:
+      - name: JAVA_TOOL_OPTIONS
+        value: "-Xms512m -Xmx1536m -XX:+UseG1GC"
+
+  identity:
+    enabled: false
+
+  optimize:
+    enabled: false
+
+  connectors:
+    enabled: false
+

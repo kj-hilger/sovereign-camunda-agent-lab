@@ -8,28 +8,26 @@
 ## ⚡ Summary
 
 * Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on Jetson Orin Nano. 
-* Designed to run and observe enterprise workflows like GitOps scaling and disaster recovery on Kubernetes or optimizing Agentic AI Tool Calls.
-* Monorepo built on core enterprise patterns, including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, GitOps (App-of-Apps), Air-gapped Data Sovereignty, and Agentic AI Observability.
-* Designed primarily for the NVIDIA Jetson Orin Nano (Debian-based edge device), assuming a dedicated device that can be easily wiped and reprovisioned.
-* A high-power desktop profile is also provided for development, but caution is advised: its host-level configuration scripts are highly invasive and intended for disposable or dedicated hardware only.
+* Designed to run and observe workflows like provisioning and scaling on Kubernetes or optimizing Agentic AI Tool Calls.
+* Monorepo built on core enterprise patterns, including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, Provisioning, Air-gapped Data Sovereignty, and Agentic AI Observability.
+* Designed for the NVIDIA Jetson Orin Nano (Debian-based edge device), assuming a dedicated device that can be easily wiped and reprovisioned.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
 * [🚀 Roadmap & Phases](#-roadmap--phases)
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
-* [🏗 Sovereign Infra](#-sovereign-infra)
-* [♾️ Cluster GitOps](#cluster-gitops)
-* [⚙️ Camunda Process](#camunda-process)
-* [💻 Alternative Profile for High Power Desktop](#alternative-profile-for-high-power-desktop)
+* [🏗 Sovereign Foundation](#-sovereign-foundation)
+* [♾️ Cluster Provisioning](#cluster-provisioning)
+* [⚙️ Agentic Workflows](#agentic-workflows)
 
 ---
 
 ### 🚀 Roadmap & Phases
 
-- **Sovereign Infra:** under test
-- **Cluster Gitops:** under development
-- **Camunda Process:** planned
+- **Sovereign Foundation:** under test
+- **Cluster Provisioning:** under development
+- **Agentic Workflows Process:** planned
 
 ---
 
@@ -38,8 +36,8 @@
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
 * **Host-Level Bootstrapping:** Installation scripts currently modify host configurations directly (e.g., Docker daemon, CNI).
-* **Kubernetes Heterogeneity:** Uses Minikube for Desktop and K3s for Edge. *Planned: Standardizing on K3s across all profiles.*
-* **Resource Constraints (Edge):** Camunda 8 together with local LLMs requires significant memory. Edge profiles require aggressive resource tuning to avoid OOM issues.
+* **Enterprise Limitations:** No GitOps (only Helm), No Prometheus/Grafana (only simple statistics planned). 
+* **Resource Constraints (Edge):** Camunda 8 together with local LLMs requires significant memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
 
 ---
 
@@ -56,37 +54,34 @@ git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 
 ---
 
-## 🏗 Sovereign Infra
+## 🏗 Sovereign Foundation
 
-Scripts to install tools for NVIDIA GPU Acceleration, K8s and GitOps.
+Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 
 ### Bootstrap
 
 ```bash
-chmod +x ./sovereign-infra/install-jetson.sh
-./sovereign-infra/install-jetson.sh
+chmod +x ./sovereign-foundation/install.sh
+./sovereign-foundation/install.sh
 ```
 
 #### Detailed documentation
 
 | Step | Description                                                                | Key Challenges                                                                                                                                                                                        |
 |------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0    | Boot Configuration & Cgroups Check                                         | Missing cgroup parameters cause memory crashes; requires reboot.                                                                                                                                      |
-| 1    | Pre-Installation Checks                                                    | Verify Jetson hardware presence. **⚠Overwrites /opt/cni/bin/ ⚠**                                                                                                                                    |
-| 2    | Installing NVIDIA Container Runtime & Network Config (containerd, flannel) | CRI unblocking and preconfiguring CNI for a stable network; aligning container runtimes with system‑wide containerd + NVIDIA runtime. **⚠fix versions for cni-plugins v1.4.0 and flannel v1.9.0 ⚠** |
-| 3    | Installing K3s                                                             | None specific; standard K3s install using containerd endpoint.                                                                                                                                        |
-| 4    | Enabling NVIDIA GPU Support in Kubernetes                                  | The Kubernetes resources for NVIDIA Device Plugin fail on Jetson due to PCI‑based affinity and memory management issues, thus patches and enhancements are needed.                                    |
-| 5    | Installing ArgoCD                                                          | Annotation limits for large manifests; requires server‑side apply.                                                                                                                                    |
-| 6    | Resource Optimization                                                      | Minimizing log overhead and saving unified memory.                                                                                                                                                    |
-| 7    | Verification                                                               | Final checks; ensure GPU registration and node allocatable resources.                                                                                                                                 |
-
+| 1    | Boot Configuration & Cgroups Check                                         | Missing cgroup parameters cause memory crashes; requires reboot.                                                                                                                                      |
+| 2    | Pre-Installation Checks                                                    | Verify Jetson hardware presence. **⚠Overwrites /opt/cni/bin/ ⚠**                                                                                                                                    |
+| 3    | Installing NVIDIA Container Runtime & Network Config (containerd, flannel) | CRI unblocking and preconfiguring CNI for a stable network; aligning container runtimes with system‑wide containerd + NVIDIA runtime. **⚠fix versions for cni-plugins v1.4.0 and flannel v1.9.0 ⚠** |
+| 4    | Installing K3s                                                             | None specific; standard K3s install using containerd endpoint.                                                                                                                                        |
+| 6    | Enabling NVIDIA GPU Support in Kubernetes                                  | The Kubernetes resources for NVIDIA Device Plugin fail on Jetson due to PCI‑based affinity and memory management issues, thus patches and enhancements are needed.                                    |
+| 7    | Resource Optimization                                                      | Minimizing log overhead and saving unified memory.                                                                                                                                                    |
 
 ### Post-Installation
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-chmod +x ./sovereign-infra/check-jetson.sh
-./sovereign-infra/check-jetson.sh
+chmod +x ./sovereign-foundation/check.sh
+./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 
@@ -96,8 +91,8 @@ chmod +x ./sovereign-infra/check-jetson.sh
 ### Delete All and Reinstall (with latest software versions)
 
 ```bash
-chmod +x ./sovereign-infra/k3s-uninstall.sh  # **⚠️ deletes all content under /var/lib/docker ⚠️**
-./sovereign-infra/k3s-uninstall.sh
+chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content under /var/lib/docker ⚠️**
+./sovereign-foundation/k3s-uninstall.sh
 
 # reboot
 
@@ -106,45 +101,49 @@ chmod +x ./sovereign-infra/k3s-uninstall.sh  # **⚠️ deletes all content unde
 
 ---
 
-## ♾️Cluster GitOps
+## ♾️Cluster Provisioning
 
-GitOps App-of-Apps Helm-Charts and scripts to install the Camunda 8 (including Camunda Agentic AI Connector, PostgreSQL, Keycloak) and Ollama (including local LLM) self-managed on top of the Sovereign Infra layer. You have air-gapped Data Sovereignty at runtime.
+* Manifest Helm-Charts and scripts to install Camunda 8 (including Camunda Agentic AI Connector, PostgreSQL) and Ollama (including local LLM) self-managed on top of the Sovereign Foundation layer. 
+* You have air-gapped Data Sovereignty at runtime.
 
 ### Bootstrap
 
 ```bash
-chmod +x ./cluster-gitops/bootstrap.sh
-./cluster-gitops/bootstrap.sh
+chmod +x ./cluster-provisioning/bootstrap.sh
+./cluster-provisioning/bootstrap.sh
 ```
 
 #### Detailed documentation
 
-| Step  | Component                        | Action & Structural Rationale                                                                                                                                                                                                                              |
-|:------|:---------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **1** | **Detecting project path**       | Applying /cluster-gitops/bootstrap/root-app.yaml triggers the App-of-Apps controller based on the target environment profile.                                                                                                                              |
-| **2** | **Adding Helm repositories**     | PostgreSQL and Keycloak are spun up first to guarantee relational data integrity and secure OIDC endpoints before the orchestrator launches.                                                                                                               |
-| **3** | **Updating Helm dependencies**   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. These local paths are configured in ArgoCD so the system can access the components without any internet connection. |
-| **4** | **Bootstrapping ArgoCD**         | ArgoCD continuously monitors this repository and reconciles the desired state.                                                                                                                                                                             |
-| **5** | **Retrieving Login information** | **⚠️ Sensitive Login information is written to terminal output. ⚠️**                                                                                                                                                                                       |
+| Step  | Component                        | Action & Structural Rationale                                                                                                          |
+|:------|:---------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
+| **1** | **Detecting project path**       |                                                                                                                                        |
+| **2** | **Adding Helm repositories**     |                                                                                                                                        |
+| **3** | **Updating Helm dependencies**   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
+| **4** | **Creating Namespaces**          |                                                                                                                                        |
+| **5** | **Setting up PostgreSQL secret** | Prompts for password of your choice.                                                                                                   |
+| **6** | **Helm Deployment**              |                                                                                                                                        |
 
 
 ### Post-Installation
 
-ArgoCD monitors the apps and charts directories alongside the Chart.lock files. It handles the internal unzipping of the pre-loaded archives and applies the corresponding values.yaml configurations automatically. Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. To perform updates, modify the version in the Chart.yaml file, execute a local helm dependency update, and synchronize the updated files. ArgoCD then completes the reconciliation process entirely offline.
+* Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
+* To perform changes in the configuration, modify the values.yaml files and execute uninstall and bootstrap again.
 
 
 ### Delete All
 
 ```bash
-chmod +x ./cluster-gitops/uninstall.sh
-./cluster-gitops/uninstall.sh
+chmod +x ./cluster-provisioning/uninstall.sh
+./cluster-provisioning/uninstall.sh
 ```
 
 ---
 
-## ⚙️Camunda Process
+## ⚙️Agentic Workflows
 
-Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop".
+* Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. 
+* The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop".
 
 ### Bootstrap
 
@@ -163,55 +162,6 @@ Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows
 *   **Reasoning Path:** Exposure of intermediate "Chain of Thought" (CoT) and logic steps.
 *   **Tool Calls:** Precise logging of which internal/external tools or APIs the agent invoked.
 *   **Memory Context:** A snapshot of short-term and long-term memory state at the moment of decision.
-
----
-
-## Alternative Profile for High Power Desktop
-
-| Environment            | Specs (Tested)                           | Use Case                                               |
-|:-----------------------|:-----------------------------------------|:-------------------------------------------------------|
-| **High-Power Desktop** | 64 GB RAM / 16 GB VRAM (RTX)             | Development, Heavy Load Testing, Large LLMs            |
-| **Edge AI (Jetson)**   | 16 GB Unified Memory (Orin Nano)         | Industrial Edge, Power-Efficient continuous operations |
-
-```
-chmod +x ./sovereign-infra/install-desktop.sh
-./sovereign-infra/install-desktop.sh
-
-# No check script currently available for desktop.
-
-# Delete All and reinstall
-chmod +x ./sovereign-infra/uninstall-desktop.sh
-./sovereign-infra/uninstall-desktop.sh
-
-# reboot
-
-# run bootstrap script again
-
-# Start again after reboot
-minikube start \
---driver=docker \
---cpus=12 \
---memory=32768 \
---gpus=all \
---addons=ingress
-
-# Delete All
-minikube delete --all --purge
-
-# Camunda
-# This layer is equal for all hardware profiles.
-```
-
-### Detailed documentation for Desktop
-
-| Step | Description                                                                | Key Challenges                                                                                                                                                                                       |
-|------|----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | NVIDIA Driver & CUDA Check                                                 | Drivers and CUDA toolkit must be manually installed on the host OS beforehand.                                                                                                                       |
-| 2    | Installing & Configuring Docker                                            | Non-root user permissions require group modifications (`usermod`), often needing a full system logout/login before the user can interact with the Docker daemon.                                     |
-| 3    | NVIDIA Container Toolkit Config                                            | Must target the **host Docker engine** specifically via direct `/etc/docker/daemon.json` configuration, **⚠️ overwrites existing ⚠**, ensuring GPU runtime sharing into downstream containers.      |
-| 4    | Installing Minikube & Helm                                                 | Requires a separate, native `kubectl` installation on the host OS to prevent command-not-found errors during automated script execution.                                                             |
-| 5    | Bootstrapping Minikube (Tuning)                                            | Enforces Docker runtime internally within the cluster to allow `--gpus=all`. **⚠️Allocates 32768 MB RAM and 12 CPUs. ⚠**                                                                            |
-| 6    | Installing ArgoCD                                                          | `--server-side` apply required, adds a desktop-specific patch to `NodePort` for direct access via the local web browser.                                                                             |
 
 ---
 

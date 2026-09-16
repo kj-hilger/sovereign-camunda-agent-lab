@@ -1,8 +1,8 @@
 #!/bin/bash
-# install-jetson.sh
+# install.sh
 set -e
 
-echo "--- 0. Boot-Configuration & Cgroups Check ---"
+echo "--- 1. Boot-Configuration & Cgroups Check ---"
 # NOTE: On Jetson Orin Nano cgroup memory must be enabled to prevent K3s API server OOM kills.
 if ! grep -q "cgroup_enable=memory" /boot/extlinux/extlinux.conf; then
     echo "🔧 Cgroups missing. adding cgroups..."
@@ -11,11 +11,11 @@ if ! grep -q "cgroup_enable=memory" /boot/extlinux/extlinux.conf; then
     exit 0
 fi
 
-echo "--- 1. Pre-Installation Checks ---"
+echo "--- 2. Pre-Installation Checks ---"
 [ -f "/etc/nv_tegra_release" ] || (echo "❌ No Jetson hardware detected." && exit 1)
 
 
-echo "--- 2. Installing NVIDIA Container Runtime & Network Config ---"
+echo "--- 3. Installing NVIDIA Container Runtime & Network Config ---"
 sudo apt-get update -y
 sudo apt-get install -y nvidia-container-toolkit nvidia-container-toolkit-base
 # NOTE: The NVIDIA container toolkit disables the default CRI in internal containerd. We enable it by removing 'disabled_plugins = ["cri"]' and set default runtime to nvidia.
@@ -75,7 +75,7 @@ EOF
 echo "✅ CNI network infrastructure complete and consistent."
 
 
-echo "--- 3. Installing K3s ---"
+echo "--- 4. Installing K3s ---"
 sudo rm -f /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
 
 NODE_IP_DETECTED=$(hostname -I | awk '{print $1}')
@@ -96,7 +96,7 @@ echo "🔍 Wait 15s for network stabilisation..."
 sleep 15
 
 
-echo "--- 4. Enabling NVIDIA GPU Support in Kubernetes ---"
+echo "--- 6. Enabling NVIDIA GPU Support in Kubernetes ---"
 # 1. Create a ConfigMap for Jetson Tegra
 sudo kubectl create configmap nvidia-plugin-config \
   -n kube-system \
@@ -157,12 +157,5 @@ else
     echo -e "\e[31m✘ Fehler: GPU not found or not ready.\e[0m"
 fi
 
-
-echo "--- 5. Installing ArgoCD ---"
-sudo kubectl create namespace argocd || echo "ArgoCD exists"
-sudo kubectl apply --server-side -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-# NOTE: Using '--server-side' bypasses local annotation limits that would otherwise break large ApplicationSet manifests.
-
-
-echo "--- 6. Resource Optimization ---"
+echo "--- 7. Resource Optimization ---"
 sudo kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
