@@ -1,16 +1,19 @@
 # Sovereign Camunda Agent Lab 🚀
 
-<p align="center">
-  <img src="docs/jetson.jpg" alt="Jetson Orin Nano" width="380" style="vertical-align: middle; max-width: 100%;" />
-  <img src="docs/target-architecture.jpeg" alt="Target Architecture Diagram" width="380" style="vertical-align: middle; max-width: 100%;" />
+* <p align="left">
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/jetson.jpg?raw=true" alt="Jetson Orin Nano" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/target-architecture.jpeg?raw=true" alt="Architecture" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
 </p>
 
 ## ⚡ Summary
 
-* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on Jetson Orin Nano. 
-* Designed to run and observe workflows like provisioning and scaling on Kubernetes or optimizing Agentic AI Tool Calls.
-* Monorepo built on core enterprise patterns, including NVIDIA GPU Acceleration, Self-Managed Camunda, local LLMs, Provisioning, Air-gapped Data Sovereignty, and Agentic AI Observability.
-* Designed for the NVIDIA Jetson Orin Nano (Debian-based edge device), assuming a dedicated device that can be easily wiped and reprovisioned.
+* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on Jetson Orin Nano.
+* Provision & operate enterprise-grade Camunda 8 with Agentic Tool Calls to LocalLLM on K8s within minutes on your desk, no Internet connection needed during runtime and also no Token Budget.
+* Optimized for the NVIDIA Jetson Orin Nano, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
@@ -19,7 +22,7 @@
 * [📋 Prerequisites](#-prerequisites)
 * [🏗 Sovereign Foundation](#-sovereign-foundation)
 * [♾️ Cluster Provisioning](#cluster-provisioning)
-* [⚙️ Agentic Workflows](#agentic-workflows)
+* [⚙️ Agentic Orchestration](#agentic-orchestration)
 
 ---
 
@@ -27,7 +30,7 @@
 
 - **Sovereign Foundation:** under test
 - **Cluster Provisioning:** under development
-- **Agentic Workflows Process:** planned
+- **Agentic Orchestration:** planned
 
 ---
 
@@ -36,18 +39,23 @@
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
 * **Host-Level Bootstrapping:** Installation scripts currently modify host configurations directly (e.g., Docker daemon, CNI).
-* **Enterprise Limitations:** No GitOps (only Helm), No Prometheus/Grafana (only simple statistics planned). 
+* **Enterprise Limitations:** No pg_admin (only some queries), No GitOps (only Helm), No Prometheus/Grafana (only Victoriametrics, kube metrics), No Operate/Tasklist (only some queries), No Optimize.
 * **Resource Constraints (Edge):** Camunda 8 together with local LLMs requires significant memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
 
 ---
 
 ## 📋 Prerequisites
+
+### Jetson OS
 - **OS:** Debian-based Linux with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`).
 - **Package Manager:** `apt` is available.
 - **Basic Tools:** `curl`, `git`, `gpg`, `sed` are installed.
-- **Kubernetes Tools:** `kubectl` is installed and available in your PATH.
+
+### Additional
+- **Kubernetes Tools:** `kubectl`, also put in PATH.
+- **Dev Tools:** `maven`.
 - **Connectivity:** Internet access is required during the bootstrap process.
-- **Repository:** You cloned the repo:
+- **Repository:** Please clone this repo:
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
@@ -103,8 +111,9 @@ chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content
 
 ## ♾️Cluster Provisioning
 
-* Manifest Helm-Charts and scripts to install Camunda 8 (including Camunda Agentic AI Connector, PostgreSQL) and Ollama (including local LLM) self-managed on top of the Sovereign Foundation layer. 
-* You have air-gapped Data Sovereignty at runtime.
+* Manifest Helm-Charts and scripts to provision the cluster self-managed on top of the Sovereign Foundation layer.
+* Camunda 8 (minimal cluster size, without Camunda Admin, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including minimal local LLM Qwen 2.5 0.5b).
+* You enjoy air-gapped Data Sovereignty at runtime.
 
 ### Bootstrap
 
@@ -131,6 +140,10 @@ chmod +x ./cluster-provisioning/bootstrap.sh
 * To perform changes in the configuration, modify the values.yaml files and execute uninstall and bootstrap again.
 
 
+### Change Cluster
+* You can change the values.yaml files, delete all and run bootstrap again (with new values).
+
+
 ### Delete All
 
 ```bash
@@ -140,7 +153,7 @@ chmod +x ./cluster-provisioning/uninstall.sh
 
 ---
 
-## ⚙️Agentic Workflows
+## ⚙️Agentic Orchestration
 
 * Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. 
 * The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop".
