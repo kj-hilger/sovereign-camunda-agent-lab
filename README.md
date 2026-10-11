@@ -196,7 +196,14 @@ sudo kubectl apply -f agentic-orchestration.yaml # please change version number 
 
 The agent acts dynamically by evaluating which natural hazards pose a threat to a given city, then selectively invoking the corresponding tools to gather current data for those specific risks only.
 
-For example: When processing Tokyo, the agent identifies risks for earthquakes, volcanoes, and tsunamis—triggering their respective tools—while skipping the hurricane tool, as Tokyo is not threatened by hurricanes at all. 
+Open Camunda Tasklist, log in with demo/demo, go to Processes View, start an instance, enter a city and view the result:
+```bash
+http://localhost:8080/tasklist
+```
+
+Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
+
+For example: When processing Tokyo, the agent identifies risks for earthquakes, volcanoes, and tsunamis—triggering their respective tools—while skipping the hurricane tool, as Tokyo is not threatened by hurricanes at all.
 
 * <p align="left">
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
@@ -206,13 +213,6 @@ For example: When processing Tokyo, the agent identifies risks for earthquakes, 
     <img src="docs/camunda-tasklist-tokyo.png?raw=true" alt="Camunda Form Task Tokyo" height="350" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
-
-- Open Camunda Tasklist, log in with demo/demo, go to Processes View, start an instance, enter a city and view the result:
-```bash
-http://localhost:8080/tasklist
-```
-
-- Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 
 ---
 
