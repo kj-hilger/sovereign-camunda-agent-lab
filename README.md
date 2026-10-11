@@ -5,7 +5,7 @@
     <img src="docs/jetson.jpg?raw=true" alt="Jetson Orin Nano" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
-    <img src="docs/bpmn-flow-miami.jpg?raw=true" alt="Camunda BPMN Process Flow Miami" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+    <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/architecture.jpeg?raw=true" alt="Architecture" height="240" style="opacity: 0.8; margin-right: 12px;"/>
@@ -194,10 +194,20 @@ sudo kubectl apply -f agentic-orchestration.yaml # please change version number 
 
 ### Operating
 
+* <p align="left">
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/camunda-tasklist-tokyo.png?raw=true" alt="Camunda Form Task Tokyo" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+</p>
+
 - Open Camunda Tasklist, log in with demo/demo, go to Processes View, start an instance, enter a city and view the result:
 ```bash
 http://localhost:8080/tasklist
 ```
+
 - Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 
 ---
