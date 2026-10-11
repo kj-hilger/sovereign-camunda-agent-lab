@@ -1,9 +1,11 @@
 #!/bin/bash
-# install.sh
 set -e
 
+# Cache Node IP
+NODE_IP_DETECTED=$(hostname -I | awk '{print $1}')
+K3S_CONF="/etc/rancher/k3s/k3s.yaml"
+
 echo "--- 1. Boot-Configuration & Cgroups Check ---"
-# NOTE: On Jetson Orin Nano cgroup memory must be enabled to prevent K3s API server OOM kills.
 if ! grep -q "cgroup_enable=memory" /boot/extlinux/extlinux.conf; then
     echo "🔧 Cgroups missing. adding cgroups..."
     sudo sed -i 's/APPEND /APPEND cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 /' /boot/extlinux/extlinux.conf
@@ -14,18 +16,11 @@ fi
 echo "--- 2. Pre-Installation Checks ---"
 [ -f "/etc/nv_tegra_release" ] || (echo "❌ No Jetson hardware detected." && exit 1)
 
-
 echo "--- 3. Installing NVIDIA Container Runtime & Network Config ---"
-sudo apt-get update -y
-sudo apt-get install -y nvidia-container-toolkit nvidia-container-toolkit-base
-# NOTE: The NVIDIA container toolkit disables the default CRI in internal containerd. We enable it by removing 'disabled_plugins = ["cri"]' and set default runtime to nvidia.
-
-# Clean containerd base with CRI enabled
 sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sudo sed -i 's/disabled_plugins = \["cri"\]/disabled_plugins = \[\]/g' /etc/containerd/config.toml
 
-# Inject NVIDIA runtime into config
 cat <<EOF | sudo tee -a /etc/containerd/config.toml
 
 [plugins."io.containerd.grpc.v1.cri".containerd]
@@ -43,21 +38,13 @@ EOF
 
 sudo systemctl restart containerd
 
-
 echo "🔧 Installing CNI plugins and correct Flannel version..."
 sudo mkdir -p /opt/cni/bin
-
-# 1. Load and extract the standard CNI package for ARM64 (for loopback, host-local, etc.)
 wget -q https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-arm64-v1.4.0.tgz
 sudo tar -xzf cni-plugins-linux-arm64-v1.4.0.tgz -C /opt/cni/bin/
 rm -f cni-plugins-linux-arm64-v1.4.0.tgz
-
-# 2. Flannel as ARM64 binary for Jetson
 wget -q https://github.com/flannel-io/cni-plugin/releases/download/v1.9.0-flannel1/flannel-arm64 -O flannel-arm64
 sudo mv flannel-arm64 /opt/cni/bin/flannel
-# NOTE: Flannel must be preconfigured for ARM64 on Jetson; otherwise K3s fails with "CNI network error". We provide a minimal 10‑flannel.conflist.
-
-# 3. Make all binaries in target folder executable
 sudo chmod +x /opt/cni/bin/*
 
 echo "🔧 Preparing flannel CNI config file..."
@@ -74,47 +61,50 @@ cat <<EOF | sudo tee /etc/cni/net.d/10-flannel.conflist
 EOF
 echo "✅ CNI network infrastructure complete and consistent."
 
-
 echo "--- 4. Installing K3s ---"
-sudo rm -f /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+curl -sfL https://get.k3s.io -o k3s_install.sh
+chmod +x k3s_install.sh
 
-NODE_IP_DETECTED=$(hostname -I | awk '{print $1}')
-curl -sfL https://get.k3s.io | sh -s - \
-  --container-runtime-endpoint unix:///var/run/containerd/containerd.sock \
-  --disable traefik \
-  --disable servicelb \
-  --node-ip $NODE_IP_DETECTED
-  # NOTE: Disabling Traefik and ServiceLB avoids API server crashes due to insufficient memory cgroup support on Jetson.
+echo "🚀 Executing K3s installation..."
+./k3s_install.sh --disable traefik --disable servicelb --node-ip $NODE_IP_DETECTED
+rm k3s_install.sh
 
-mkdir -p ~/.kube
-sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-sudo chown -R $USER:$USER ~/.kube
-chmod 600 ~/.kube/config
-export KUBECONFIG=~/.kube/config
+alias k='kubectl'
+echo "alias k='kubectl'" >> ~/.bashrc
 
-echo "🔍 Wait 15s for network stabilisation..."
-sleep 15
+echo "🔍 Waiting for K3s API server to be fully Ready..."
+MAX_RETRIES=600
+COUNT=0
+until sudo KUBECONFIG=$K3S_CONF kubectl get nodes >/dev/null 2>&1; do
+    if [ $COUNT -ge $MAX_RETRIES ]; then
+        echo "❌ Error: K3s failed to reach Ready state within 10 minutes."
+        exit 1
+    fi
+    echo "... Waiting for Cluster Ready (attempt $COUNT/$MAX_RETRIES) ..."
+    sleep 10
+    ((COUNT++))
+done
+echo "✅ K3s API server is fully up!"
 
-
-echo "--- 6. Enabling NVIDIA GPU Support in Kubernetes ---"
-# 1. Create a ConfigMap for Jetson Tegra
-sudo kubectl create configmap nvidia-plugin-config \
+echo "--- 5. Enabling NVIDIA GPU Support in Kubernetes ---"
+# Ensure the ConfigMap exists
+sudo KUBECONFIG=$K3S_CONF kubectl create configmap nvidia-plugin-config \
   -n kube-system \
   --from-literal=config.yaml="version: v1
 flags:
   failOnInitError: false
   deviceDiscoveryStrategy: tegra" || echo "ConfigMap exists already."
 
-# Prepare the socket directory
 sudo mkdir -p /var/lib/kubelet/device-plugins
 sudo chmod 755 /var/lib/kubelet/device-plugins
 
-helm repo add nvdp https://nvidia.github.io/k8s-device-plugin || true
-helm repo update
+# Helm Repository Management
+echo "🔧 Adding Helm repositories..."
+sudo KUBECONFIG=$K3S_CONF helm repo add nvdp https://nvidia.github.io/k8s-device-plugin || true
+sudo KUBECONFIG=$K3S_CONF helm repo update
 
-# 2. Install the plugin via Helm – WITH THE SPECIFIED DEVICE-STRATEGY FLAG
 echo "🚀 Installing NVIDIA Device Plugin via Helm..."
-helm upgrade --install nvdp nvdp/nvidia-device-plugin \
+sudo KUBECONFIG=$K3S_CONF helm upgrade --install nvdp nvdp/nvidia-device-plugin \
   --namespace kube-system \
   --set gds.enabled=false \
   --set gdrcopy.enabled=false \
@@ -126,10 +116,10 @@ helm upgrade --install nvdp nvdp/nvidia-device-plugin \
   --set "tolerations[0].effect=NoSchedule" \
   --set "tolerations[1].operator=Exists" \
   --set "tolerations[1].effect=NoExecute"
-  # NOTE: We set deviceListStrategy=envvar and nodeSelector=null to allow the NVIDIA Device Plugin to run on Tegra's integrated GPU (no PCI bus).
 
 echo "🔧 Patching DaemonSet..."
-sudo kubectl patch daemonset nvdp-nvidia-device-plugin -n kube-system --type='json' -p='[
+# Korrigierte JSON-Patch Syntax
+sudo KUBECONFIG=$K3S_CONF kubectl patch daemonset nvdp-nvidia-device-plugin -n kube-system --type='json' -p='[
   {"op": "replace", "path": "/spec/template/spec/containers/0/args", "value": ["--config-file=/etc/nvidia-config/config.yaml"]},
   {"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/-", "value": {"name": "nvidia-config-volume", "mountPath": "/etc/nvidia-config"}},
   {"op": "add", "path": "/spec/template/spec/volumes/-", "value": {"name": "nvidia-config-volume", "configMap": {"name": "nvidia-plugin-config"}}}
@@ -138,24 +128,36 @@ sudo kubectl patch daemonset nvdp-nvidia-device-plugin -n kube-system --type='js
 echo "⏳ Wait 15s for Pod creation..."
 sleep 15
 
-sudo kubectl rollout restart daemonset nvdp-nvidia-device-plugin -n kube-system
-sudo kubectl rollout status daemonset nvdp-nvidia-device-plugin -n kube-system --timeout=60s
+sudo KUBECONFIG=$K3S_CONF kubectl rollout restart daemonset nvdp-nvidia-device-plugin -n kube-system
+sudo KUBECONFIG=$K3S_CONF kubectl rollout status daemonset nvdp-nvidia-device-plugin -n kube-system --timeout=60s
 
-sudo kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
+sudo KUBECONFIG=$K3S_CONF kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
   grep -q '"--config-file=/etc/nvidia-config/config.yaml"' && \
-sudo kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
+sudo KUBECONFIG=$K3S_CONF kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
   grep -q '"name": "nvidia-config-volume"' && \
 echo "✅ DaemonSet Patch verified!" || (echo "❌ DaemonSet Patch verification failed!" && exit 1)
 
 echo "Wait for GPU registration..."
 sleep 10
-sudo kubectl describe node | grep -A 8 "Allocatable"
+sudo KUBECONFIG=$K3S_CONF kubectl describe node | grep -A 8 "Allocatable"
 
-if sudo kubectl describe node | grep -A 8 "Allocatable" | grep -q "nvidia.com/gpu:[[:space:]]*1"; then
+if sudo KUBECONFIG=$K3S_CONF kubectl describe node | grep -A 8 "Allocatable" | grep -q "nvidia.com/gpu:[[:space:]]*1"; then
     echo -e "\e[32m✔ GPU registered successfully!\e[0m"
 else
     echo -e "\e[31m✘ Fehler: GPU not found or not ready.\e[0m"
 fi
 
-echo "--- 7. Resource Optimization ---"
-sudo kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
+echo "--- 6. Resource Optimization ---"
+sudo KUBECONFIG=$K3S_CONF kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
+
+echo "--- 7. Installing Tools ---"
+sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64
+sudo chmod a+x /usr/local/bin/yq
+if command -v yq >/dev/null 2>&1; then
+    echo "✅ yq installed successfully: $(yq --version)"
+else
+    echo "❌ yq installation failed. Please check network or permissions."
+    exit 1
+fi
+
+echo "✅ Installation complete!"

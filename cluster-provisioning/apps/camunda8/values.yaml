@@ -1,6 +1,6 @@
 image:
   repository: camunda/camunda-platform
-  tag: "8.9.0"
+  tag: "8.9.14"
   pullPolicy: IfNotPresent
 
 resources:
@@ -14,7 +14,9 @@ resources:
 camunda-platform:
   global:
     image:
-      tag: "8.9.0"
+      tag: "8.9.14"
+    security:
+      unprotectedAPI: true
 
   orchestration:
     clusterSize: "1"
@@ -38,6 +40,8 @@ camunda-platform:
     env:
       - name: JAVA_TOOL_OPTIONS
         value: "-Xms512m -Xmx1536m -XX:+UseG1GC"
+      - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTED_API
+        value: "true"
 
   identity:
     enabled: false
@@ -46,5 +50,13 @@ camunda-platform:
     enabled: false
 
   connectors:
-    enabled: false
-
+    enabled: true
+    env:
+      - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTED_API
+        value: "true"
+      - name: CAMUNDA_CLIENT_MODE
+        value: self-managed
+      - name: CAMUNDA_CLIENT_GRPCADDRESS
+        value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:26500"
+      - name: CAMUNDA_CLIENT_RESTADDRESS
+        value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:8080"

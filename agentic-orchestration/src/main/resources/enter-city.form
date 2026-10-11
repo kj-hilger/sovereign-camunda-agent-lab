@@ -1,0 +1,33 @@
+{
+  "components": [
+    {
+      "text": "# Please enter City",
+      "type": "text",
+      "layout": {
+        "row": "Row_03cmdio",
+        "columns": null
+      },
+      "id": "Field_15hxjuo"
+    },
+    {
+      "label": "City",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_124d1np",
+        "columns": null
+      },
+      "id": "Field_0fdt569",
+      "key": "city"
+    }
+  ],
+  "type": "default",
+  "id": "Form_inputTravel",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.51.1"
+  },
+  "schemaVersion": 19,
+  "versionTag": "2"
+}

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentic-orchestration
+  namespace: camunda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agentic-orchestration
+  template:
+    metadata:
+      labels:
+        app: agentic-orchestration
+    spec:
+      containers:
+      - name: app
+        image: agentic-orchestration:1.0.0
+        imagePullPolicy: Never
+        env:
+        - name: CAMUNDA_CLIENT_MODE
+          value: "self-managed"
+        - name: CAMUNDA_CLIENT_ZEEBE_GATEWAY_ADDRESS
+          value: "camunda-zeebe-gateway.default.svc.cluster.local:26500"
