@@ -1,0 +1,13 @@
+camunda:
+  client:
+    mode: self-managed
+    prefer-rest-over-grpc: true
+
+    # REST endpoint for commands/deployments
+    rest-address: http://camunda8-zeebe-gateway.camunda.svc.cluster.local:8080
+
+    # gRPC endpoint for streaming jobs (must also be an absolute URI)
+    grpc-address: http://camunda8-zeebe-gateway.camunda.svc.cluster.local:26500
+
+    auth:
+      method: none

@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "text": "# Natural Hazard Information",
+      "type": "text",
+      "layout": {
+        "row": "Row_0r0ic70",
+        "columns": null
+      },
+      "id": "Field_0q4u5hs"
+    },
+    {
+      "label": "entered City",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1ki6pwl",
+        "columns": null
+      },
+      "id": "Field_1s2wt8q",
+      "key": "city"
+    },
+    {
+      "text": "---",
+      "type": "text",
+      "layout": {
+        "row": "Row_098hchd",
+        "columns": null
+      },
+      "id": "Field_0m337rp"
+    },
+    {
+      "label": "Natural Hazard Information",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0yp0wl8",
+        "columns": null
+      },
+      "id": "Field_0dvykj2",
+      "key": "agent.responseText",
+      "readonly": true
+    }
+  ],
+  "type": "default",
+  "id": "Form_bookTravel",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.51.1"
+  },
+  "schemaVersion": 19,
+  "versionTag": "2"
+}

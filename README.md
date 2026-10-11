@@ -5,15 +5,18 @@
     <img src="docs/jetson.jpg?raw=true" alt="Jetson Orin Nano" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
-    <img src="docs/target-architecture.jpeg?raw=true" alt="Architecture" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+    <img src="docs/bpmn-flow-miami.jpg?raw=true" alt="Camunda BPMN Process Flow Miami" height="240" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/architecture.jpeg?raw=true" alt="Architecture" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
 
 ## ⚡ Summary
 
-* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on Jetson Orin Nano.
+* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on NVIDIA Jetson Orin Nano.
 * Provision & operate enterprise-grade Camunda 8 with Agentic Tool Calls to LocalLLM on K8s within minutes on your desk, no Internet connection needed during runtime and also no Token Budget.
-* Optimized for the NVIDIA Jetson Orin Nano, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
+* Optimized for the NVIDIA Jetson Orin Nano 8 GB, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
@@ -28,9 +31,9 @@
 
 ### 🚀 Roadmap & Phases
 
-- **Sovereign Foundation:** under test
-- **Cluster Provisioning:** under development
-- **Agentic Orchestration:** planned
+- **Sovereign Foundation:** ready
+- **Cluster Provisioning:** under test, further improvement planned
+- **Agentic Orchestration:** under test, further improvement planned
 
 ---
 
@@ -39,8 +42,9 @@
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
 * **Host-Level Bootstrapping:** Installation scripts currently modify host configurations directly (e.g., Docker daemon, CNI).
-* **Enterprise Limitations:** No pg_admin (only some queries), No GitOps (only Helm), No Prometheus/Grafana (only Victoriametrics, kube metrics), No Operate/Tasklist (only some queries), No Optimize.
-* **Resource Constraints (Edge):** Camunda 8 together with local LLMs requires significant memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
+* **Enterprise Limitations:** No GitOps tooling (only Helm), no pg_admin tooling, no visual observability, no Camunda security available.
+* **Resource Constraints (Edge):** Camunda 8 together with Ollama local LLM requires 80% of the 8 GB memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
+* **Camunda Scope:** No Camunda Optimize available.
 
 ---
 
@@ -52,7 +56,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 - **Basic Tools:** `curl`, `git`, `gpg`, `sed` are installed.
 
 ### Additional
-- **Kubernetes Tools:** `kubectl`, also put in PATH.
+- **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
 - **Dev Tools:** `maven`.
 - **Connectivity:** Internet access is required during the bootstrap process.
 - **Repository:** Please clone this repo:
@@ -69,11 +73,14 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
-chmod +x ./sovereign-foundation/install.sh
-./sovereign-foundation/install.sh
+sudo chmod +x ./sovereign-foundation/install.sh
+sudo ./sovereign-foundation/install.sh
 ```
 
 #### Detailed documentation
+
+<details>
+<summary>Script Steps</summary>
 
 | Step | Description                                                                | Key Challenges                                                                                                                                                                                        |
 |------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -81,8 +88,11 @@ chmod +x ./sovereign-foundation/install.sh
 | 2    | Pre-Installation Checks                                                    | Verify Jetson hardware presence. **⚠Overwrites /opt/cni/bin/ ⚠**                                                                                                                                    |
 | 3    | Installing NVIDIA Container Runtime & Network Config (containerd, flannel) | CRI unblocking and preconfiguring CNI for a stable network; aligning container runtimes with system‑wide containerd + NVIDIA runtime. **⚠fix versions for cni-plugins v1.4.0 and flannel v1.9.0 ⚠** |
 | 4    | Installing K3s                                                             | None specific; standard K3s install using containerd endpoint.                                                                                                                                        |
-| 6    | Enabling NVIDIA GPU Support in Kubernetes                                  | The Kubernetes resources for NVIDIA Device Plugin fail on Jetson due to PCI‑based affinity and memory management issues, thus patches and enhancements are needed.                                    |
-| 7    | Resource Optimization                                                      | Minimizing log overhead and saving unified memory.                                                                                                                                                    |
+| 5    | Enabling NVIDIA GPU Support in Kubernetes                                  | The Kubernetes resources for NVIDIA Device Plugin fail on Jetson due to PCI‑based affinity and memory management issues, thus patches and enhancements are needed.                                    |
+| 6    | Resource Optimization                                                      | Minimizing log overhead and saving unified memory.                                                                                                                                                    |
+| 7    | Installing Tools                                                           | yq for better output formats.                                                                                                                                                                         |
+
+</details>
 
 ### Post-Installation
 * The installation configures Docker to run without `sudo` for the current user.
@@ -101,9 +111,7 @@ chmod +x ./sovereign-foundation/check.sh
 ```bash
 chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content under /var/lib/docker ⚠️**
 ./sovereign-foundation/k3s-uninstall.sh
-
 # reboot
-
 # run bootstrap script again
 ```
 
@@ -112,43 +120,62 @@ chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content
 ## ♾️Cluster Provisioning
 
 * Manifest Helm-Charts and scripts to provision the cluster self-managed on top of the Sovereign Foundation layer.
-* Camunda 8 (minimal cluster size, without Camunda Admin, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including minimal local LLM Qwen 2.5 0.5b).
+* Camunda 8 (minimal cluster size, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including local LLM Qwen 2.5:3b-instruct).
 * You enjoy air-gapped Data Sovereignty at runtime.
 
 ### Bootstrap
 
 ```bash
 chmod +x ./cluster-provisioning/bootstrap.sh
-./cluster-provisioning/bootstrap.sh
+sudo bash ./cluster-provisioning/bootstrap.sh
 ```
 
 #### Detailed documentation
 
-| Step  | Component                        | Action & Structural Rationale                                                                                                          |
-|:------|:---------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
-| **1** | **Detecting project path**       |                                                                                                                                        |
-| **2** | **Adding Helm repositories**     |                                                                                                                                        |
-| **3** | **Updating Helm dependencies**   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
-| **4** | **Creating Namespaces**          |                                                                                                                                        |
-| **5** | **Setting up PostgreSQL secret** | Prompts for password of your choice.                                                                                                   |
-| **6** | **Helm Deployment**              |                                                                                                                                        |
+<details>
+<summary>Script Steps</summary>
 
+| Step | Component                    | Action & Structural Rationale                                                                                                          |
+|:-----|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | Detecting project path       |                                                                                                                                        |
+| 2    | Adding Helm repositories     |                                                                                                                                        |
+| 3    | Updating Helm dependencies   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
+| 4    | Creating Namespaces          |                                                                                                                                        |
+| 5    | Setting up PostgreSQL secret | Prompts for password of your choice.                                                                                                   |
+| 6    | Helm Deployment              |                                                                                                                                        |
+| 7    | Installing Camunda Tools     | zdb                                                                                                                                    |
 
-### Post-Installation
+</details>
+
+Manual steps (will be enhanced and moved to the script in the future)
+- Patch Connectors
+```bash
+sudo kubectl set env deployment/camunda8-connectors -n camunda \
+CAMUNDA_CLIENT_WORKER_DEFAULTS_STREAMENABLED=false \
+ZEEBE_CLIENT_WORKER_DEFAULTS_STREAM_ENABLED=false \
+CAMUNDA_CLIENT_PREFER_REST_OVER_GRPC=true
+# Deletes and recreates connectors pod, which is also needed because a successful start will only happen after zeebe startup was complete.
+```
+- load LLM:
+```bash
+sudo kubectl get pods -n ollama # copy ollama pod name
+sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama run qwen2.5:3b-instruct
+```
+Necessary to open Camunda Tasklist and Operate in browser:
+```bash
+sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda
+```
+
+### Operating
 
 * Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
 * To perform changes in the configuration, modify the values.yaml files and execute uninstall and bootstrap again.
 
-
-### Change Cluster
-* You can change the values.yaml files, delete all and run bootstrap again (with new values).
-
-
 ### Delete All
 
 ```bash
-chmod +x ./cluster-provisioning/uninstall.sh
-./cluster-provisioning/uninstall.sh
+sudo chmod +x ./cluster-provisioning/uninstall.sh
+sudo ./cluster-provisioning/uninstall.sh
 ```
 
 ---
@@ -160,29 +187,23 @@ chmod +x ./cluster-provisioning/uninstall.sh
 
 ### Bootstrap
 
+- Build and Deploy Docker Image:
+```bash
+cd agentic-orchestration
+mvn clean package
+docker build -t agentic-orchestration:1.0.0 . # set a new version number in each build.
+docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
+sudo k3s ctr images import agentic-orchestration-1.0.0.tar
+sudo kubectl apply -f agentic-orchestration.yaml # please change version number in file before
 ```
-# planned Process Name: Agentic Orchestrator
+
+### Operating
+
+- Open Camunda Tasklist, go to Process View, start an instance, enter a city and view the result:
+```bash
+http://localhost:8080/tasklist
 ```
-
-### Run instances
-
-```
-# planned: Link to Operate
-```
-
-### Observe Audit Trail
-*   **Prompt & Response:** Full visibility into the exact instructions and raw LLM outputs.
-*   **Reasoning Path:** Exposure of intermediate "Chain of Thought" (CoT) and logic steps.
-*   **Tool Calls:** Precise logging of which internal/external tools or APIs the agent invoked.
-*   **Memory Context:** A snapshot of short-term and long-term memory state at the moment of decision.
-
----
-
-## 📄Docs
-
-- Architectural diagrams
-- Architectural decisions
-- Pictures
+- Open Camunda Operate, go to Process View, choose the latest instance and observe its flow and variables.
 
 ---
 

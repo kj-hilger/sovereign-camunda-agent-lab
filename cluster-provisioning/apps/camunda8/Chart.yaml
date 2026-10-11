@@ -5,9 +5,9 @@ description: |
   Configures Camunda 8.
 type: application
 version: 1.0.0
-appVersion: "8.9.0"
+appVersion: "8.9.14"
 
 dependencies:
   - name: camunda-platform
-    version: 14.10.0
+    version: 14.11.0
     repository: https://helm.camunda.io

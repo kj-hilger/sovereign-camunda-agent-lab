@@ -4,51 +4,55 @@
 
 set -e
 
-echo "📂 Detecting project path..."
+# Environment setup
+# We use a variable to make it easier to update if needed
+K3S_CONF="/etc/rancher/k3s/k3s.yaml"
+
+echo "--- 1. 📂 Detecting project path ---"
 PROJECT_PATH=$(cd "$(dirname "$0")" && pwd)
 cd "$PROJECT_PATH"
 echo "✅ Project Root detected: $PROJECT_PATH"
 echo "-----------------------------------------------------------------------"
 
-echo "📦 Adding Helm repositories..."
-helm repo add bitnami "https://charts.bitnami.com/bitnami"
-helm repo update
-helm repo add ollama "https://helm.otwld.com"
+echo "--- 2. 📦 Adding Helm repositories ---"
+sudo KUBECONFIG=$K3S_CONF helm repo add bitnami "https://charts.bitnami.com/bitnami" || true
+sudo KUBECONFIG=$K3S_CONF helm repo update
+sudo KUBECONFIG=$K3S_CONF helm repo add ollama "https://helm.otwld.com" || true
 echo "✅ Repositories added."
 echo "-----------------------------------------------------------------------"
 
-echo "🔄 Updating Helm dependencies..."
-helm dependency update apps/camunda8/
-helm dependency update apps/ollama/
-helm dependency update apps/postgresql/
+echo "--- 3. 🔄 Updating Helm dependencies ---"
+sudo KUBECONFIG=$K3S_CONF helm dependency update apps/camunda8/
+sudo KUBECONFIG=$K3S_CONF helm dependency update apps/ollama/
+sudo KUBECONFIG=$K3S_CONF helm dependency update apps/postgresql/
 echo "✅ Dependencies updated."
 echo "-----------------------------------------------------------------------"
 
-echo "🔧 Creating namespaces..."
-kubectl create namespace camunda --dry-run=client -o yaml | kubectl apply -f -
-kubectl create namespace ollama --dry-run=client -o yaml | kubectl apply -f -
-kubectl create namespace postgresql --dry-run=client -o yaml | kubectl apply -f -
+echo "--- 4. 🔧 Creating namespaces ---"
+sudo KUBECONFIG=$K3S_CONF kubectl create namespace camunda --dry-run=client -o yaml | sudo KUBECONFIG=$K3S_CONF kubectl apply -f - --validate=false
+sudo KUBECONFIG=$K3S_CONF kubectl create namespace ollama --dry-run=client -o yaml | sudo KUBECONFIG=$K3S_CONF kubectl apply -f - --validate=false
+sudo KUBECONFIG=$K3S_CONF kubectl create namespace postgresql --dry-run=client -o yaml | sudo KUBECONFIG=$K3S_CONF kubectl apply -f - --validate=false
 echo "✅ Namespaces ready."
 echo "-----------------------------------------------------------------------"
 
-echo "🔑 Setting up PostgreSQL secret..."
+echo "--- 5. 🔑 Setting up PostgreSQL secret ---"
 
 # Prompt for a password
 read -s -p "Enter the password for PostgreSQL: " DB_PASSWORD
 echo ""
 echo "Using password: $DB_PASSWORD"
 
-kubectl create secret generic camunda-db-secret \
+sudo KUBECONFIG=$K3S_CONF kubectl create secret generic camunda-db-secret \
   --namespace camunda \
   --from-literal=postgres-password=$DB_PASSWORD \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | sudo KUBECONFIG=$K3S_CONF kubectl apply -f - --validate=false
 echo "✅ Secret created."
 echo "-----------------------------------------------------------------------"
 
-echo "🚀 Proceeding with Helm deployment..."
+echo "--- 6. 🚀 Helm deployment ---"
 
 # Deploying PostgreSQL
-helm upgrade --install postgresql ./apps/postgresql \
+sudo KUBECONFIG=$K3S_CONF helm upgrade --install postgresql ./apps/postgresql \
   --namespace postgresql \
   --set auth.username=camunda \
   --set auth.password=$DB_PASSWORD \
@@ -56,11 +60,11 @@ helm upgrade --install postgresql ./apps/postgresql \
   --set service.type=ClusterIP
 
 # Deploying Ollama
-helm upgrade --install ollama ./apps/ollama \
+sudo KUBECONFIG=$K3S_CONF helm upgrade --install ollama ./apps/ollama \
   --namespace ollama
 
 # Deploying Camunda8
-helm upgrade --install camunda8 ./apps/camunda8 \
+sudo KUBECONFIG=$K3S_CONF helm upgrade --install camunda8 ./apps/camunda8 \
   --namespace camunda \
   --set orchestration.data.secondaryStorage.rdbms.url=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres \
   --set orchestration.data.secondaryStorage.rdbms.username=camunda \
@@ -69,5 +73,14 @@ helm upgrade --install camunda8 ./apps/camunda8 \
 
 echo "✅ All applications deployed via Helm."
 echo "-----------------------------------------------------------------------"
-echo "🚀 Deployment Complete! Check status with: kubectl get pods -A"
+
+echo "--- 7. 🛠 Installing Camunda Tools ---"
+echo "Installing Zdb..."
+curl -L https://github.com/ChrisKujawa/zdb/releases/latest/download/zdb-linux-amd64 -o zdb
+chmod +x zdb
+sudo mv zdb /usr/local/bin/
+echo "✅ Zdb installed."
+
+echo "-----------------------------------------------------------------------"
+echo "🚀 Deployment Complete! Check status with: sudo kubectl get pods -A"
 echo "-----------------------------------------------------------------------"
