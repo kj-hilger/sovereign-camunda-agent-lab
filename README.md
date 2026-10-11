@@ -57,7 +57,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 
 ### Additional
 - **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
-- **Dev Tools:** `maven`.
+- **Dev Tools:** `openjdk-25`, `maven`, (sudo apt install -y openjdk-25-jdk maven)
 - **Connectivity:** Internet access is required during the bootstrap process.
 - **Repository:** Please clone this repo:
 ```bash
@@ -73,8 +73,7 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
-sudo chmod +x ./sovereign-foundation/install.sh
-sudo ./sovereign-foundation/install.sh
+sudo ./sovereign-foundation/install.sh # maybe needed before: sudo chmod +x ./sovereign-foundation/install.sh
 ```
 
 #### Detailed documentation
@@ -98,8 +97,7 @@ sudo ./sovereign-foundation/install.sh
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-chmod +x ./sovereign-foundation/check.sh
-./sovereign-foundation/check.sh
+./sovereign-foundation/check.sh # maybe needed before: chmod +x ./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 
@@ -109,8 +107,7 @@ chmod +x ./sovereign-foundation/check.sh
 ### Delete All and Reinstall (with latest software versions)
 
 ```bash
-chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content under /var/lib/docker ⚠️**
-./sovereign-foundation/k3s-uninstall.sh
+./sovereign-foundation/k3s-uninstall.sh # maybe needed before chmod +x ./sovereign-foundation/k3s-uninstall.sh,  **⚠️ deletes all content under /var/lib/docker ⚠️**
 # reboot
 # run bootstrap script again
 ```
@@ -126,8 +123,7 @@ chmod +x ./sovereign-foundation/k3s-uninstall.sh  # **⚠️ deletes all content
 ### Bootstrap
 
 ```bash
-chmod +x ./cluster-provisioning/bootstrap.sh
-sudo bash ./cluster-provisioning/bootstrap.sh
+sudo bash ./cluster-provisioning/bootstrap.sh # maybe needed before: chmod +x ./cluster-provisioning/bootstrap.sh
 ```
 
 #### Detailed documentation
@@ -159,7 +155,7 @@ CAMUNDA_CLIENT_PREFER_REST_OVER_GRPC=true
 - load LLM:
 ```bash
 sudo kubectl get pods -n ollama # copy ollama pod name
-sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama run qwen2.5:3b-instruct
+sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct
 ```
 Necessary to open Camunda Tasklist and Operate in browser:
 ```bash
@@ -174,8 +170,7 @@ sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda
 ### Delete All
 
 ```bash
-sudo chmod +x ./cluster-provisioning/uninstall.sh
-sudo ./cluster-provisioning/uninstall.sh
+sudo ./cluster-provisioning/uninstall.sh # maybe needed before: sudo chmod +x ./cluster-provisioning/uninstall.sh
 ```
 
 ---
@@ -191,19 +186,19 @@ sudo ./cluster-provisioning/uninstall.sh
 ```bash
 cd agentic-orchestration
 mvn clean package
-docker build -t agentic-orchestration:1.0.0 . # set a new version number in each build.
-docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
+sudo docker build -t agentic-orchestration:1.0.0 . # set a new version number in each build.
+sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
 sudo kubectl apply -f agentic-orchestration.yaml # please change version number in file before
 ```
 
 ### Operating
 
-- Open Camunda Tasklist, go to Process View, start an instance, enter a city and view the result:
+- Open Camunda Tasklist, log in with demo/demo, go to Processes View, start an instance, enter a city and view the result:
 ```bash
 http://localhost:8080/tasklist
 ```
-- Open Camunda Operate, go to Process View, choose the latest instance and observe its flow and variables.
+- Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 
 ---
 
