@@ -29,6 +29,7 @@
           <zeebe:input source="http://ollama.ollama.svc.cluster.local:11434/v1" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="not-needed" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="qwen2.5:3b-instruct" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="=0.0" target="provider.openaiCompatible.model.parameters.temperature" />
           <zeebe:input source="=&#34;You are a helpful assistant, but without high reasoning and answering in a brief style.&#10;First estimate roughly with your existing knowledge and WIHOUT TOOL CALLS which of these hazards threatens the city of &#34; + city + &#34; with a high probability compared to major cities in the world: earthquake, volcano, tsunami, hurricane. &#10;Then call only for hazards, which BEFORE were classified as high for &#34; + city + &#34; the corresponding tool to retrieve the current risk.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=city" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
@@ -115,10 +116,6 @@
         <dc:Bounds x="426" y="140" width="350" height="550" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1oq19qc_di" bpmnElement="currentEarthquakeRiskTool">
-        <dc:Bounds x="540" y="200" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0jegt4n" bpmnElement="currentVolcanoEruptionRiskTool">
         <dc:Bounds x="540" y="320" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -129,6 +126,10 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0poew1r" bpmnElement="currentHurricaneRiskTool">
         <dc:Bounds x="540" y="560" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1oq19qc_di" bpmnElement="currentEarthquakeRiskTool">
+        <dc:Bounds x="540" y="200" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1h0i0io_di" bpmnElement="enterCity">
