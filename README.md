@@ -203,14 +203,22 @@ http://localhost:8080/tasklist
 
 Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 
-For example: When processing Tokyo, the agent identifies risks for earthquakes, volcanoes, and tsunamis—triggering their respective tools—while skipping the hurricane tool, as Tokyo is not threatened by hurricanes at all.
+For example: When processing Tokyo, the agent identifies risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools - while skipping the hurricane tool, as Tokyo is not threatened by hurricanes at all.
 
-* <p align="left">
+<p align="left">
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="450" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/camunda-tasklist-tokyo.png?raw=true" alt="Camunda Form Task Tokyo" height="350" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+</p>
+
+Ressource consumption at the end of Agentic AI execution
+
+<p align="left">
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/resources-top-nodes.png?raw=true" alt="top nodes" height="40" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
 
