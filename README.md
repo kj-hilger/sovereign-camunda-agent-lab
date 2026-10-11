@@ -14,9 +14,9 @@
 
 ## ⚡ Summary
 
-* Lightweight, ephemeral DevOps lab for rapidly spinning up a Camunda 8 Agentic AI process application together with an LLM provider on NVIDIA Jetson Orin Nano.
-* Provision & operate enterprise-grade Camunda 8 with Agentic Tool Calls to LocalLLM on K8s within minutes on your desk, no Internet connection needed during runtime and also no Token Budget.
-* Optimized for the NVIDIA Jetson Orin Nano 8 GB, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
+* Lightweight, ephemeral **DevOps lab** for rapidly spinning up a **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
+* Provision & operate enterprise-grade Camunda 8 with **Agentic Tool Calls** to Local LLM on **Kubernetes** within minutes on your desk, no Internet connection needed during runtime and also no Token Budget.
+* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
