@@ -148,7 +148,8 @@ kubectl apply -f agentic-orchestration.yaml # please change version number in fi
 ```
 
 ### Operating
-* The Process Application contains the example Process "Natural Hazard Information".
+
+The Process Application contains the example Process "Natural Hazard Information".
 
 #### Camunda Tasklist
 
