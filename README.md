@@ -16,7 +16,7 @@
 
 * A Lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
 * Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes, no Internet connection required at runtime and zero token costs.
-* Use this project as a starting point to understand how all components of a self-managed enterprise setup interact and prototype further scenarios. 
+* Use this project as a starting point to understand how all components of a **self-managed enterprise setup** interact and prototype further scenarios. 
 * Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
@@ -49,7 +49,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 
 ### Additional
 - **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
-- **Dev Tools:** `openjdk-25`, `maven`, (install via 'sudo apt install -y openjdk-25-jdk maven')
+- **Dev Tools:** `openjdk-25`, `maven`, (install via `sudo apt install -y openjdk-25-jdk maven`)
 - **Connectivity:** Internet access is required during the bootstrap process.
 - **Repository:** Clone the repository:
 ```bash
@@ -165,7 +165,11 @@ After a few seconds, the LLM-generated response will appear automatically in the
 </p>
 
 #### Camunda Operate
-Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
+Open Camunda Operate:
+```bash
+http://localhost:8080/tasklist
+```
+Log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 <p align="left">
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="450" style="opacity: 0.8; margin-right: 12px;"/>
@@ -175,7 +179,7 @@ The agent acted dynamically by evaluating which natural hazards pose a threat to
 For example, when processing "Tokyo", the agent identified risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools and earthquake tool even twice - while skipping the avalanche tool, as Tokyo is not threatened by avalanche.
 
 #### Kubernetes
-Monitor resource consumption after execution using kubectl top nodes, like in this example:
+Monitor resource consumption by executing `kubectl top nodes`, like in this example:
 <p align="left">
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/resources-top-nodes.png?raw=true" alt="top nodes" height="40" style="opacity: 0.8; margin-right: 12px;"/>
