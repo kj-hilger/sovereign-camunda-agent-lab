@@ -7,9 +7,9 @@ K3S_CONF="/etc/rancher/k3s/k3s.yaml"
 
 echo "--- 1. Boot-Configuration & Cgroups Check ---"
 if ! grep -q "cgroup_enable=memory" /boot/extlinux/extlinux.conf; then
-    echo "🔧 Cgroups missing. adding cgroups..."
+    echo "🔧 Cgroups missing. Adding cgroups..."
     sudo sed -i 's/APPEND /APPEND cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 /' /boot/extlinux/extlinux.conf
-    echo "🛑 system reboot required. Please: sudo reboot"
+    echo "🛑 System reboot required. Please run: sudo reboot"
     exit 0
 fi
 
@@ -66,16 +66,27 @@ curl -sfL https://get.k3s.io -o k3s_install.sh
 chmod +x k3s_install.sh
 
 echo "🚀 Executing K3s installation..."
-./k3s_install.sh --disable traefik --disable servicelb --node-ip $NODE_IP_DETECTED
+sudo ./k3s_install.sh --disable traefik --disable servicelb --node-ip $NODE_IP_DETECTED
 rm k3s_install.sh
 
+# Open K3s config permissions for current user (once via sudo)
+sudo chmod 644 $K3S_CONF
+export KUBECONFIG=$K3S_CONF
+
+# Persistent entry in .bashrc
+if ! grep -q "KUBECONFIG" ~/.bashrc; then
+    echo "export KUBECONFIG=$K3S_CONF" >> ~/.bashrc
+fi
+
 alias k='kubectl'
-echo "alias k='kubectl'" >> ~/.bashrc
+if ! grep -q "alias k=" ~/.bashrc; then
+    echo "alias k='kubectl'" >> ~/.bashrc
+fi
 
 echo "🔍 Waiting for K3s API server to be fully Ready..."
 MAX_RETRIES=600
 COUNT=0
-until sudo KUBECONFIG=$K3S_CONF kubectl get nodes >/dev/null 2>&1; do
+until kubectl get nodes >/dev/null 2>&1; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
         echo "❌ Error: K3s failed to reach Ready state within 10 minutes."
         exit 1
@@ -87,8 +98,7 @@ done
 echo "✅ K3s API server is fully up!"
 
 echo "--- 5. Enabling NVIDIA GPU Support in Kubernetes ---"
-# Ensure the ConfigMap exists
-sudo KUBECONFIG=$K3S_CONF kubectl create configmap nvidia-plugin-config \
+kubectl create configmap nvidia-plugin-config \
   -n kube-system \
   --from-literal=config.yaml="version: v1
 flags:
@@ -98,13 +108,12 @@ flags:
 sudo mkdir -p /var/lib/kubelet/device-plugins
 sudo chmod 755 /var/lib/kubelet/device-plugins
 
-# Helm Repository Management
 echo "🔧 Adding Helm repositories..."
-sudo KUBECONFIG=$K3S_CONF helm repo add nvdp https://nvidia.github.io/k8s-device-plugin || true
-sudo KUBECONFIG=$K3S_CONF helm repo update
+helm repo add nvdp https://nvidia.github.io/k8s-device-plugin || true
+helm repo update
 
 echo "🚀 Installing NVIDIA Device Plugin via Helm..."
-sudo KUBECONFIG=$K3S_CONF helm upgrade --install nvdp nvdp/nvidia-device-plugin \
+helm upgrade --install nvdp nvdp/nvidia-device-plugin \
   --namespace kube-system \
   --set gds.enabled=false \
   --set gdrcopy.enabled=false \
@@ -118,8 +127,7 @@ sudo KUBECONFIG=$K3S_CONF helm upgrade --install nvdp nvdp/nvidia-device-plugin 
   --set "tolerations[1].effect=NoExecute"
 
 echo "🔧 Patching DaemonSet..."
-# Korrigierte JSON-Patch Syntax
-sudo KUBECONFIG=$K3S_CONF kubectl patch daemonset nvdp-nvidia-device-plugin -n kube-system --type='json' -p='[
+kubectl patch daemonset nvdp-nvidia-device-plugin -n kube-system --type='json' -p='[
   {"op": "replace", "path": "/spec/template/spec/containers/0/args", "value": ["--config-file=/etc/nvidia-config/config.yaml"]},
   {"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/-", "value": {"name": "nvidia-config-volume", "mountPath": "/etc/nvidia-config"}},
   {"op": "add", "path": "/spec/template/spec/volumes/-", "value": {"name": "nvidia-config-volume", "configMap": {"name": "nvidia-plugin-config"}}}
@@ -128,27 +136,27 @@ sudo KUBECONFIG=$K3S_CONF kubectl patch daemonset nvdp-nvidia-device-plugin -n k
 echo "⏳ Wait 15s for Pod creation..."
 sleep 15
 
-sudo KUBECONFIG=$K3S_CONF kubectl rollout restart daemonset nvdp-nvidia-device-plugin -n kube-system
-sudo KUBECONFIG=$K3S_CONF kubectl rollout status daemonset nvdp-nvidia-device-plugin -n kube-system --timeout=60s
+kubectl rollout restart daemonset nvdp-nvidia-device-plugin -n kube-system
+kubectl rollout status daemonset nvdp-nvidia-device-plugin -n kube-system --timeout=60s
 
-sudo KUBECONFIG=$K3S_CONF kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
+kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
   grep -q '"--config-file=/etc/nvidia-config/config.yaml"' && \
-sudo KUBECONFIG=$K3S_CONF kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
+kubectl get daemonset nvdp-nvidia-device-plugin -n kube-system -o json | \
   grep -q '"name": "nvidia-config-volume"' && \
 echo "✅ DaemonSet Patch verified!" || (echo "❌ DaemonSet Patch verification failed!" && exit 1)
 
 echo "Wait for GPU registration..."
 sleep 10
-sudo KUBECONFIG=$K3S_CONF kubectl describe node | grep -A 8 "Allocatable"
+kubectl describe node | grep -A 8 "Allocatable"
 
-if sudo KUBECONFIG=$K3S_CONF kubectl describe node | grep -A 8 "Allocatable" | grep -q "nvidia.com/gpu:[[:space:]]*1"; then
+if kubectl describe node | grep -A 8 "Allocatable" | grep -q "nvidia.com/gpu:[[:space:]]*1"; then
     echo -e "\e[32m✔ GPU registered successfully!\e[0m"
 else
-    echo -e "\e[31m✘ Fehler: GPU not found or not ready.\e[0m"
+    echo -e "\e[31m✘ Error: GPU not found or not ready.\e[0m"
 fi
 
 echo "--- 6. Resource Optimization ---"
-sudo KUBECONFIG=$K3S_CONF kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
+kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
 
 echo "--- 7. Installing Tools ---"
 sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64

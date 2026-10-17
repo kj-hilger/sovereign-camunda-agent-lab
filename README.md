@@ -1,26 +1,26 @@
 # Sovereign Camunda Agent Lab 🚀
 
 * <p align="left">
-  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+  <a href="docs/jetson.jpg" target="_blank" rel="noreferrer">
     <img src="docs/jetson.jpg?raw=true" alt="Jetson Orin Nano" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
-  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+  <a href="docs/camunda-operate-tokyo.png" target="_blank" rel="noreferrer">
     <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
-  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+  <a href="docs/architecture.jpeg" target="_blank" rel="noreferrer">
     <img src="docs/architecture.jpeg?raw=true" alt="Architecture" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
 
 ## ⚡ Summary
 
-* Lightweight, ephemeral **DevOps lab** for rapidly spinning up a **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
-* Provision & operate enterprise-grade Camunda 8 with **Agentic Tool Calls** to Local LLM on **Kubernetes** within minutes on your desk, no Internet connection needed during runtime and also no Token Budget.
-* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact and cost-effective device that can be easily wiped and reprovisioned. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
+* A Lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
+* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes, no Internet connection required at runtime and zero token costs.
+* Use this project as a starting point to understand how all components of a self-managed enterprise setup interact and prototype further scenarios. 
+* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
-* [🚀 Roadmap & Phases](#-roadmap--phases)
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
 * [🏗 Sovereign Foundation](#-sovereign-foundation)
@@ -29,20 +29,12 @@
 
 ---
 
-### 🚀 Roadmap & Phases
-
-- **Sovereign Foundation:** ready
-- **Cluster Provisioning:** under test, further improvement planned
-- **Agentic Orchestration:** under test, further improvement planned
-
----
-
 ### ⚠️ Known Limitations & Architectural Caveats
 
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
-* **Host-Level Bootstrapping:** Installation scripts currently modify host configurations directly (e.g., Docker daemon, CNI).
-* **Enterprise Limitations:** No GitOps tooling (only Helm), no pg_admin tooling, no visual observability, no Camunda security available.
+* **Host Modification:** Installation scripts directly modify host settings (e.g., Docker daemon, CNI).
+* **Enterprise Tooling Omissions:** Lacks GitOps tools (Helm only), pgAdmin, visual observability, and default Camunda security configurations.
 * **Resource Constraints (Edge):** Camunda 8 together with Ollama local LLM requires 80% of the 8 GB memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
 * **Camunda Scope:** No Camunda Optimize available.
 
@@ -57,12 +49,13 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 
 ### Additional
 - **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
-- **Dev Tools:** `openjdk-25`, `maven`, (sudo apt install -y openjdk-25-jdk maven)
+- **Dev Tools:** `openjdk-25`, `maven`, (install via 'sudo apt install -y openjdk-25-jdk maven')
 - **Connectivity:** Internet access is required during the bootstrap process.
-- **Repository:** Please clone this repo:
+- **Repository:** Clone the repository:
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
+- Ensure all scripts are executable (chmod +x <script>.sh) before running.
 
 ---
 
@@ -73,13 +66,10 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
-sudo ./sovereign-foundation/install.sh # maybe needed before: sudo chmod +x ./sovereign-foundation/install.sh
+./sovereign-foundation/install.sh
 ```
-
-#### Detailed documentation
-
 <details>
-<summary>Script Steps</summary>
+<summary>Documentation of Script Steps</summary>
 
 | Step | Description                                                                | Key Challenges                                                                                                                                                                                        |
 |------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -97,19 +87,13 @@ sudo ./sovereign-foundation/install.sh # maybe needed before: sudo chmod +x ./so
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-./sovereign-foundation/check.sh # maybe needed before: chmod +x ./sovereign-foundation/check.sh
+./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
-
-### Start again after reboot
-* K3s starts automatically via systemd service.
-
-### Delete All and Reinstall (with latest software versions)
-
+* K3s starts automatically on reboot via a systemd service.
+* To perform a full reset and reinstall: run the uninstall script below, reboot the device, and execute the bootstrap script again.
 ```bash
-./sovereign-foundation/k3s-uninstall.sh # maybe needed before chmod +x ./sovereign-foundation/k3s-uninstall.sh,  **⚠️ deletes all content under /var/lib/docker ⚠️**
-# reboot
-# run bootstrap script again
+./sovereign-foundation/k3s-uninstall.sh # **⚠️ deletes all content under /var/lib/docker ⚠️**
 ```
 
 ---
@@ -117,19 +101,15 @@ sudo ./sovereign-foundation/install.sh # maybe needed before: sudo chmod +x ./so
 ## ♾️Cluster Provisioning
 
 * Manifest Helm-Charts and scripts to provision the cluster self-managed on top of the Sovereign Foundation layer.
-* Camunda 8 (minimal cluster size, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including local LLM Qwen 2.5:3b-instruct).
-* You enjoy air-gapped Data Sovereignty at runtime.
+* Camunda 8 (minimal cluster size, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including local LLM Qwen 2.5:3b-instruct and optimizations for flash attention and KV-cache).
 
 ### Bootstrap
 
 ```bash
-sudo bash ./cluster-provisioning/bootstrap.sh # maybe needed before: chmod +x ./cluster-provisioning/bootstrap.sh
+./cluster-provisioning/bootstrap.sh
 ```
-
-#### Detailed documentation
-
 <details>
-<summary>Script Steps</summary>
+<summary>Documentation of Script Steps</summary>
 
 | Step | Component                    | Action & Structural Rationale                                                                                                          |
 |:-----|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
@@ -140,87 +120,68 @@ sudo bash ./cluster-provisioning/bootstrap.sh # maybe needed before: chmod +x ./
 | 5    | Setting up PostgreSQL secret | Prompts for password of your choice.                                                                                                   |
 | 6    | Helm Deployment              |                                                                                                                                        |
 | 7    | Installing Camunda Tools     | zdb                                                                                                                                    |
+| 8    | Loading LLM                  | qwen2.5:3b-instruct                                                                                                                                    |
 
 </details>
 
-Manual steps (will be enhanced and moved to the script in the future)
-- Patch Connectors
-```bash
-sudo kubectl set env deployment/camunda8-connectors -n camunda \
-CAMUNDA_CLIENT_WORKER_DEFAULTS_STREAMENABLED=false \
-ZEEBE_CLIENT_WORKER_DEFAULTS_STREAM_ENABLED=false \
-CAMUNDA_CLIENT_PREFER_REST_OVER_GRPC=true
-# Deletes and recreates connectors pod, which is also needed because a successful start will only happen after zeebe startup was complete.
-```
-- load LLM:
-```bash
-sudo kubectl get pods -n ollama # copy ollama pod name
-sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct
-```
-Necessary to open Camunda Tasklist and Operate in browser:
-```bash
-sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda
-```
-
-### Operating
+### Post-Provisioning
 
 * Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
-* To perform changes in the configuration, modify the values.yaml files and execute uninstall and bootstrap again.
-
-### Delete All
-
+* To update the configuration, modify the values.yaml file(s), then apply the uninstall script below and re-bootstrap the cluster:
 ```bash
-sudo ./cluster-provisioning/uninstall.sh # maybe needed before: sudo chmod +x ./cluster-provisioning/uninstall.sh
+./cluster-provisioning/uninstall.sh
 ```
 
 ---
 
 ## ⚙️Agentic Orchestration
 
-* Leverages Camunda 8 Deterministic Orchestration to manage agentic decision flows, ensuring full process visibility, execution logging and Observability. 
-* The BPMN Pattern Agentic AI as Subprocess together with a human task ensures "Human-in-the-Loop".
+### Application Build & Deploy
 
-### Bootstrap
-
-- Build and Deploy Docker Image:
 ```bash
 cd agentic-orchestration
 mvn clean package
-sudo docker build -t agentic-orchestration:1.0.0 . # set a new version number in each build.
-sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
+docker build -t agentic-orchestration:1.0.0 . # set a new version number for each build.
+docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
-sudo kubectl apply -f agentic-orchestration.yaml # please change version number in file before
+kubectl apply -f agentic-orchestration.yaml # please change version number in file before
 ```
 
 ### Operating
+* The Process Application contains the example Process "Natural Hazard Information".
 
-The agent acts dynamically by evaluating which natural hazards pose a threat to a given city, then selectively invoking the corresponding tools to gather current data for those specific risks only.
+#### Camunda Tasklist
 
-Open Camunda Tasklist, log in with demo/demo, go to Processes View, start an instance, enter a city and view the result:
+Open Camunda Tasklist:
 ```bash
 http://localhost:8080/tasklist
 ```
-
-Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
-
-For example: When processing Tokyo, the agent identifies risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools - while skipping the hurricane tool, as Tokyo is not threatened by hurricanes at all.
-
+Log in with demo/demo, go to Processes View, start an instance, enter a city into the free-text input field, for example "Tokyo" and hit the button.
+After a few seconds, the LLM-generated response will appear automatically in the task form:
 <p align="left">
-  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
-    <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="450" style="opacity: 0.8; margin-right: 12px;"/>
-  </a>
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/camunda-tasklist-tokyo.png?raw=true" alt="Camunda Form Task Tokyo" height="350" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
 
-Ressource consumption at the end of Agentic AI execution
+#### Camunda Operate
+Open Camunda Operate, log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
+<p align="left">
+  <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
+    <img src="docs/camunda-operate-tokyo.png?raw=true" alt="Camunda BPMN Process Flow Tokyo" height="450" style="opacity: 0.8; margin-right: 12px;"/>
+  </a>
+</p>
+The agent acted dynamically by evaluating which natural hazards pose a threat to the given city, then selectively invoked the corresponding tools to gather current data for those specific risks only.
+For example, when processing "Tokyo", the agent identified risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools and earthquake tool even twice - while skipping the avalanche tool, as Tokyo is not threatened by avalanche.
 
+#### Kubernetes
+Monitor resource consumption after execution using kubectl top nodes, like in this example:
 <p align="left">
   <a href="docs/sovereign-camunda-agent-lab" target="_blank" rel="noreferrer">
     <img src="docs/resources-top-nodes.png?raw=true" alt="top nodes" height="40" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
+Peak CPU consumption during tool calls reached ~25%, with a total Agentic AI execution duration of ~15 seconds.
 
 ---
 

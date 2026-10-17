@@ -6,10 +6,10 @@ image:
 resources:
   limits:
     cpu: 3000m
-    memory: 2500Mi
+    memory: 2000Mi
   requests:
-    cpu: 1250m
-    memory: 1000Mi
+    cpu: 1000m
+    memory: 512Mi
 
 camunda-platform:
   global:
@@ -32,11 +32,11 @@ camunda-platform:
         type: rdbms
     resources:
       limits:
-        cpu: "2500m"
-        memory: "1500Mi"
+        cpu: "2000m"
+        memory: "1200Mi"
       requests:
-        cpu: "750m"
-        memory: "1000Mi"
+        cpu: "800m"
+        memory: "512Mi"
     env:
       - name: JAVA_TOOL_OPTIONS
         value: "-Xms512m -Xmx1536m -XX:+UseG1GC"
@@ -51,6 +51,13 @@ camunda-platform:
 
   connectors:
     enabled: true
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "384Mi"
+      requests:
+        cpu: "300m"
+        memory: "192Mi"
     env:
       - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTED_API
         value: "true"
@@ -60,3 +67,9 @@ camunda-platform:
         value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:26500"
       - name: CAMUNDA_CLIENT_RESTADDRESS
         value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:8080"
+      - name: CAMUNDA_CLIENT_WORKER_DEFAULTS_STREAMENABLED
+        value: "false"
+      - name: ZEEBE_CLIENT_WORKER_DEFAULTS_STREAM_ENABLED
+        value: "false"
+      - name: CAMUNDA_CLIENT_PREFER_REST_OVER_GRPC
+        value: "true"
