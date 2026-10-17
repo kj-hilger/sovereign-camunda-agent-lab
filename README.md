@@ -153,7 +153,6 @@ The Process Application contains the example Process "Natural Hazard Information
 
 #### Camunda Tasklist
 
-Open Camunda Tasklist:
 ```bash
 http://localhost:8080/tasklist
 ```
@@ -166,7 +165,7 @@ After a few seconds, the LLM-generated response will appear automatically in the
 </p>
 
 #### Camunda Operate
-Open Camunda Operate:
+
 ```bash
 http://localhost:8080/tasklist
 ```
