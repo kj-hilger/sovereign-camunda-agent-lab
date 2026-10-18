@@ -15,7 +15,7 @@
 ## ⚡ Summary
 
 * A Lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
-* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes, no Internet connection required at runtime and zero token costs.
+* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes. Don't worry about Internet connection at runtime, token costs, update frictions or API Changes.
 * Use this project as a starting point to understand how all components of a **self-managed enterprise setup** interact and prototype further scenarios. 
 * Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
@@ -36,7 +36,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 * **Host Modification:** Installation scripts directly modify host settings (e.g., Docker daemon, CNI).
 * **Enterprise Tooling Omissions:** Lacks GitOps tools (Helm only), pgAdmin, visual observability, and default Camunda security configurations.
 * **Resource Constraints (Edge):** Camunda 8 together with Ollama local LLM requires 80% of the 8 GB memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
-* **Camunda Scope:** No Camunda Optimize available.
+* **Camunda Scope:** Lacks Camunda Optimize, due to high resource requirements. Camunda Modeler is generally not available for ARM-based Linux.
 
 ---
 
@@ -45,7 +45,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 ### Jetson OS
 - **OS:** Debian-based Linux with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`).
 - **Package Manager:** `apt` is available.
-- **Basic Tools:** `curl`, `git`, `gpg`, `sed` are installed.
+- **Basic Tools:** `curl`, `git`, `gpg`, `sed`, `chromium` are installed.
 
 ### Additional
 - **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
@@ -158,7 +158,7 @@ The Process Application contains the example Process "Natural Hazard Information
 #### Camunda Tasklist
 
 ```bash
-http://localhost:8080/tasklist
+http://localhost:8080/tasklist # open in chromium browser
 ```
 Log in with demo/demo, go to Processes View, start an instance, enter a city into the free-text input field, for example "Tokyo" and hit the button.
 After a few seconds, the LLM-generated response will appear automatically in the task form:
@@ -171,7 +171,7 @@ After a few seconds, the LLM-generated response will appear automatically in the
 #### Camunda Operate
 
 ```bash
-http://localhost:8080/tasklist
+http://localhost:8080/tasklist # open in chromium browser
 ```
 Log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 <p align="left">
@@ -189,7 +189,7 @@ Monitor resource consumption by executing `kubectl top nodes`, like in this exam
     <img src="docs/resources-top-nodes.png?raw=true" alt="top nodes" height="40" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
 </p>
-Peak CPU consumption during tool calls reached ~25%, with a total Agentic AI execution duration of ~15 seconds.
+Peak CPU consumption during tool calls reached 99%, with a total Agentic AI execution duration of ~15 seconds.
 
 ---
 

@@ -48,8 +48,8 @@
           <zeebe:input source="http://ollama.ollama.svc.cluster.local:11434/v1" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="not-needed" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="qwen2.5:3b-instruct" target="provider.openaiCompatible.model.model" />
-          <zeebe:input source="=0.0" target="provider.openaiCompatible.model.parameters.temperature" />
-          <zeebe:input source="=&#34;You are a helpful assistant, but without high reasoning and answering in a brief style.&#10;First estimate roughly with your existing knowledge and WIHOUT TOOL CALLS which of these hazards threatens the city of &#34; + city + &#34; with a high probability compared to major cities in the world: earthquake, volcano, tsunami, avalanche. &#10;Then call only for hazards, which BEFORE were classified as high for &#34; + city + &#34; the corresponding tool to retrieve the current risk.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=0.1" target="provider.openaiCompatible.model.parameters.temperature" />
+          <zeebe:input source="=&#34;You are a helpful assistant and answering in a brief style.&#10;First estimate roughly with your existing knowledge and WIHOUT TOOL CALLS which of the natural hazards of earthquake, volcano, tsunami, avalanche threatens the city of &#34; + city + &#34; with a high probability compared to major cities in the world. &#10;Then call only for relevant natural hazards for the city of &#34; + city + &#34; the corresponding tool to retrieve the current risk.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=city" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
@@ -120,7 +120,7 @@ Use it if the city is in a zone of subduction.</bpmn:documentation>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1t5i73t">
       <bpmndi:BPMNShape id="Participant_0re2b8f_di" bpmnElement="Participant_0re2b8f" isHorizontal="true">
-        <dc:Bounds x="140" y="110" width="1000" height="610" />
+        <dc:Bounds x="140" y="110" width="870" height="610" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
@@ -134,30 +134,30 @@ Use it if the city is in a zone of subduction.</bpmn:documentation>
         <dc:Bounds x="425" y="155" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1cz3ec7_di" bpmnElement="readHazardInformation">
-        <dc:Bounds x="920" y="140" width="100" height="80" />
+        <dc:Bounds x="790" y="140" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0fyne8e_di" bpmnElement="Event_0fyne8e">
-        <dc:Bounds x="1072" y="162" width="36" height="36" />
+        <dc:Bounds x="942" y="162" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0mhpx5m_di" bpmnElement="determineCurrentDataOfRelevantNaturalHazards" isExpanded="true">
-        <dc:Bounds x="516" y="140" width="350" height="550" />
+        <dc:Bounds x="520" y="140" width="230" height="550" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0jegt4n" bpmnElement="currentVolcanoEruptionRiskTool">
-        <dc:Bounds x="630" y="320" width="100" height="80" />
+        <dc:Bounds x="590" y="320" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_01hqomk" bpmnElement="currentTsunamiRiskTool">
-        <dc:Bounds x="630" y="440" width="100" height="80" />
+        <dc:Bounds x="590" y="440" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0poew1r" bpmnElement="currentAvalancheRiskTool">
-        <dc:Bounds x="630" y="560" width="100" height="80" />
+        <dc:Bounds x="590" y="560" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1oq19qc_di" bpmnElement="currentEarthquakeRiskTool">
-        <dc:Bounds x="630" y="200" width="100" height="80" />
+        <dc:Bounds x="590" y="200" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0vr6qp2_di" bpmnElement="Flow_0vr6qp2">
@@ -169,16 +169,16 @@ Use it if the city is in a zone of subduction.</bpmn:documentation>
         <di:waypoint x="425" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1pt03uf_di" bpmnElement="Flow_1pt03uf">
-        <di:waypoint x="866" y="180" />
-        <di:waypoint x="920" y="180" />
+        <di:waypoint x="750" y="180" />
+        <di:waypoint x="790" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_15b0htn_di" bpmnElement="Flow_15b0htn">
-        <di:waypoint x="1020" y="180" />
-        <di:waypoint x="1072" y="180" />
+        <di:waypoint x="890" y="180" />
+        <di:waypoint x="942" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1qsjlcb_di" bpmnElement="Flow_1qsjlcb">
         <di:waypoint x="475" y="180" />
-        <di:waypoint x="516" y="180" />
+        <di:waypoint x="520" y="180" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
