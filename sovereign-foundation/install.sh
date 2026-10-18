@@ -109,6 +109,10 @@ sudo mkdir -p /var/lib/kubelet/device-plugins
 sudo chmod 755 /var/lib/kubelet/device-plugins
 
 echo "🔧 Adding Helm repositories..."
+if ! command -v helm &> /dev/null; then
+    echo "🔧 Helm is not installed. Installing Helm..."
+    curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+fi
 helm repo add nvdp https://nvidia.github.io/k8s-device-plugin || true
 helm repo update
 
