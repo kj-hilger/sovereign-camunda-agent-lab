@@ -55,7 +55,6 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
-- Ensure all scripts are executable (chmod +x <script>.sh) before running.
 
 ---
 
@@ -66,6 +65,7 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
+chmod +x ./sovereign-foundation/install.sh
 ./sovereign-foundation/install.sh
 ```
 <details>
@@ -87,13 +87,15 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
+chmod +x ./sovereign-foundation/check.sh
 ./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 * K3s starts automatically on reboot via a systemd service.
 * To perform a full reset and reinstall: run the uninstall script below, reboot the device, and execute the bootstrap script again.
 ```bash
-./sovereign-foundation/k3s-uninstall.sh # **⚠️ deletes all content under /var/lib/docker ⚠️**
+chmod +x ./sovereign-foundation/uninstall.sh
+./sovereign-foundation/uninstall.sh # **⚠️ deletes all content under /var/lib/docker ⚠️**
 ```
 
 ---
@@ -106,6 +108,7 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
+chmod +x ./cluster-provisioning/bootstrap.sh
 ./cluster-provisioning/bootstrap.sh
 ```
 <details>
@@ -129,6 +132,7 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 * Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
 * To update the configuration, modify the values.yaml file(s), then apply the uninstall script below and re-bootstrap the cluster:
 ```bash
+chmod +x ./cluster-provisioning/uninstall.sh
 ./cluster-provisioning/uninstall.sh
 ```
 
