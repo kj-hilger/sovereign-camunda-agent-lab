@@ -81,16 +81,9 @@ sudo mv zdb /usr/local/bin/
 echo "✅ Zdb installed."
 echo "-----------------------------------------------------------------------"
 
-echo "--- 8. 🤖 Loading LLM ---"
-OLLAMA_POD=$(kubectl get pods -n ollama -o jsonpath='{.items[0].metadata.name}')
-echo "Detected Ollama pod: $OLLAMA_POD"
-kubectl exec -n ollama $OLLAMA_POD -- ollama pull qwen2.5:3b-instruct
-echo "✅ LLM model pulled."
-echo "-----------------------------------------------------------------------"
-
 echo "🚀 Deployment Complete! Check status with: kubectl get pods -A"
 echo "-----------------------------------------------------------------------"
-echo "--- 🔟 ⚠️ Manual Steps ---"
-echo "To open Camunda Tasklist and Operate in browser, run the following command manually:"
+echo "--- 🔟 ⚠️ Wait until all pods are READY and then run the following commands manually ---"
+echo "kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct"
 echo "kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda"
 echo "-----------------------------------------------------------------------"
