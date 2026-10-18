@@ -123,7 +123,7 @@ chmod +x ./cluster-provisioning/bootstrap.sh && ./cluster-provisioning/bootstrap
 | 3    | Updating Helm dependencies   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
 | 4    | Creating Namespaces          |                                                                                                                                        |
 | 5    | Setting up PostgreSQL secret | Prompts for password of your choice.                                                                                                   |
-| 6    | Helm Deployment              |                                                                                                                                        |
+| 6    | Helm Deployment              | Camunda 8.9.14, Ollama 0.5.11                                                                                                                                       |
 | 7    | Installing Camunda Tools     | zdb                                                                                                                                    |
 | 8    | Loading LLM                  | qwen2.5:3b-instruct                                                                                                                                    |
 
@@ -184,7 +184,7 @@ Log in with demo/demo, go to Processes View, choose the latest instance and obse
   </a>
 </p>
 The agent acted dynamically by evaluating which natural hazards pose a threat to the given city, then selectively invoked the corresponding tools to gather current data for those specific risks only.
-For example, when processing "Tokyo", the agent identified risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools and earthquake tool even twice - while skipping the avalanche tool, as Tokyo is not threatened by avalanche.
+For example, when processing "Tokyo", the agent identified risks for earthquakes, volcanoes, and tsunamis - triggering their respective tools - while skipping the avalanche tool, as Tokyo is not threatened by avalanche.
 
 #### Kubernetes
 Monitor resource consumption by executing `kubectl top nodes`, like in this example:
