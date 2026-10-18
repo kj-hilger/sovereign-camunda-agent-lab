@@ -51,6 +51,13 @@ camunda-platform:
 
   connectors:
     enabled: true
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "384Mi"
+      requests:
+        cpu: "300m"
+        memory: "192Mi"
     env:
       - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTED_API
         value: "true"
@@ -60,3 +67,9 @@ camunda-platform:
         value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:26500"
       - name: CAMUNDA_CLIENT_RESTADDRESS
         value: "http://camunda8-zeebe-gateway.camunda.svc.cluster.local:8080"
+      - name: CAMUNDA_CLIENT_WORKER_DEFAULTS_STREAMENABLED
+        value: "false"
+      - name: ZEEBE_CLIENT_WORKER_DEFAULTS_STREAM_ENABLED
+        value: "false"
+      - name: CAMUNDA_CLIENT_PREFER_REST_OVER_GRPC
+        value: "true"
