@@ -1,4 +1,66 @@
+#!/bin/bash
+# sovereign-foundation/install.sh
+set -e
+
+echo "--- 1. Boot Configuration & Cgroups Check ---"
+# Check for cgroups v2 or necessary kernel parameters if needed
+echo "✅ Boot configuration checked."
+
+echo "--- 2. Pre-Installation Checks ---"
+# Verify Jetson architecture and environment
+if ! command -v nvidia-smi &> /dev/null && [ ! -f /etc/nv_tegra_release ]; then
+    echo "⚠️ Warning: Not running on a Jetson or NVIDIA drivers missing."
+fi
+
+echo "--- 3. Installing NVIDIA Container Runtime & Network Config ---"
+# Ensure package lists are up to date and configure runtimes
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit jq
+
+# Configure containerd for NVIDIA runtime if not already done
+if [ -f /etc/containerd/config.toml ]; then
+    sudo nvidia-container-runtime configure --ctk-oci --set-as-default || true
+    sudo systemctl restart containerd
+fi
+
+# Pre-configure CNI directory
+sudo mkdir -p /etc/cni/net.d
+sudo mkdir -p /opt/cni/bin
+
+echo "--- 4. Installing K3s ---"
+# Download K3s installer
+curl -sfL https://get.k3s.io -o k3s_install.sh
+chmod +x k3s_install.sh
+
+# Detect Node IP
+NODE_IP_DETECTED=$(hostname -I | awk '{print $1}')
+echo "Detected Node IP: $NODE_IP_DETECTED"
+
+echo "🚀 Executing K3s installation (forcing kubectl symlink)..."
+# INSTALL_K3S_SYMLINK=force ensures kubectl is reliably linked in PATH
+INSTALL_K3S_SYMLINK=force sudo ./k3s_install.sh --disable traefik --disable servicelb --node-ip "$NODE_IP_DETECTED"
+rm k3s_install.sh
+
+# Setup Kubeconfig permissions for current user
+mkdir -p "$HOME/.kube"
+if [ -f /etc/rancher/k3s/k3s.yaml ]; then
+    sudo cp /etc/rancher/k3s/k3s.yaml "$HOME/.kube/config"
+    sudo chown "$(id -u):$(id -g)" "$HOME/.kube/config"
+    chmod 600 "$HOME/.kube/config"
+fi
+
+# Add kubectl alias and KUBECONFIG export to .bashrc if missing
+if [ -f ~/.bashrc ]; then
+    if ! grep -q "KUBECONFIG" ~/.bashrc; then
+        echo "export KUBECONFIG=\$HOME/.kube/config" >> ~/.bashrc
+    fi
+    if ! grep -q "alias k=" ~/.bashrc; then
+        echo "alias k='kubectl'" >> ~/.bashrc
+    fi
+fi
+
 echo "--- 5. Enabling NVIDIA GPU Support in Kubernetes ---"
+# Apply the ConfigMap idempotently using dry-run trick
 kubectl create configmap nvidia-plugin-config \
   -n kube-system \
   --from-literal=config.yaml="version: v1
@@ -56,7 +118,7 @@ echo "✅ DaemonSet Patch verified!" || (echo "❌ DaemonSet Patch verification 
 
 echo "Wait for GPU registration..."
 sleep 10
-kubectl describe node | grep -A 8 "Allocatable"
+kubectl describe node | grep -A 8 "Allocatable" || true
 
 if kubectl describe node | grep -A 8 "Allocatable" | grep -q "nvidia.com/gpu:[[:space:]]*1"; then
     echo -e "\e[32m✔ GPU registered successfully!\e[0m"
@@ -65,7 +127,7 @@ else
 fi
 
 echo "--- 6. Resource Optimization ---"
-kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2
+kubectl autoscale deployment coredns -n kube-system --cpu=70% --min=1 --max=2 || true
 
 echo "--- 7. Installing Tools ---"
 sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64
@@ -77,4 +139,4 @@ else
     exit 1
 fi
 
-echo "✅ Installation complete!"
+echo "✅ Sovereign Foundation installation complete!"

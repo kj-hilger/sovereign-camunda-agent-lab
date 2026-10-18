@@ -50,7 +50,7 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 - **Basic Tools:** `curl`, `wget`, `git`, `gpg`,`tar`, `sed`, `chromium` are available.
 
 ### Additional manual installs
-- **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
+- **Kubernetes Tools:** `docker`
 - **Dev Tools:** `openjdk-25`, `maven`, (install via `sudo apt install -y openjdk-25-jdk maven`)
 
 ### Repository
@@ -80,7 +80,7 @@ Note: The bootstrap scripts have been validated on an active JetPack 6.x system.
 | 1    | Boot Configuration & Cgroups Check                                         | Missing cgroup parameters cause memory crashes; requires reboot.                                                                                                                                      |
 | 2    | Pre-Installation Checks                                                    | Verify Jetson hardware presence. **⚠Overwrites /opt/cni/bin/ ⚠**                                                                                                                                    |
 | 3    | Installing NVIDIA Container Runtime & Network Config (containerd, flannel) | CRI unblocking and preconfiguring CNI for a stable network; aligning container runtimes with system‑wide containerd + NVIDIA runtime. **⚠fix versions for cni-plugins v1.4.0 and flannel v1.9.0 ⚠** |
-| 4    | Installing K3s                                                             | None specific; standard K3s install using containerd endpoint.                                                                                                                                        |
+| 4    | Installing K3s                                                             | None specific; standard K3s install using containerd endpoint. Adds k3s kubectl in user path.                                                                                                         |
 | 5    | Enabling NVIDIA GPU Support in Kubernetes                                  | The Kubernetes resources for NVIDIA Device Plugin fail on Jetson due to PCI‑based affinity and memory management issues, thus patches and enhancements are needed.                                    |
 | 6    | Resource Optimization                                                      | Minimizing log overhead and saving unified memory.                                                                                                                                                    |
 | 7    | Installing Tools                                                           | yq for better output formats.                                                                                                                                                                         |
