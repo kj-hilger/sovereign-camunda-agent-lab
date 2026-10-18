@@ -1,6 +1,6 @@
 # Sovereign Camunda Agent Lab 🚀
 
-* <p align="left">
+<p align="left">
   <a href="docs/jetson.jpg" target="_blank" rel="noreferrer">
     <img src="docs/jetson.jpg?raw=true" alt="Jetson Orin Nano" height="240" style="opacity: 0.8; margin-right: 12px;"/>
   </a>
@@ -12,10 +12,12 @@
   </a>
 </p>
 
+Read the formatted documentation on GitHub Pages: [https://github.com/kj-hilger/sovereign-camunda-agent-lab](https://kj-hilger.github.io/sovereign-camunda-agent-lab/)
+
 ## ⚡ Summary
 
-* A Lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
-* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes. Don't worry about Internet connection at runtime, token costs, update frictions or API Changes.
+* A lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
+* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes. Don't worry about internet connection at runtime, token costs, update friction, or API changes.
 * Use this project as a starting point to understand how all components of a **self-managed enterprise setup** interact and prototype further scenarios. 
 * Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
