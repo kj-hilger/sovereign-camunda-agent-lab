@@ -65,8 +65,7 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
-chmod +x ./sovereign-foundation/install.sh
-./sovereign-foundation/install.sh
+chmod +x ./sovereign-foundation/install.sh && ./sovereign-foundation/install.sh
 ```
 <details>
 <summary>Documentation of Script Steps</summary>
@@ -87,15 +86,14 @@ chmod +x ./sovereign-foundation/install.sh
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-chmod +x ./sovereign-foundation/check.sh
-./sovereign-foundation/check.sh
+chmod +x ./sovereign-foundation/check.sh && ./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 * K3s starts automatically on reboot via a systemd service.
 * To perform a full reset and reinstall: run the uninstall script below, reboot the device, and execute the bootstrap script again.
 ```bash
-chmod +x ./sovereign-foundation/uninstall.sh
-./sovereign-foundation/uninstall.sh # **⚠️ deletes all content under /var/lib/docker ⚠️**
+chmod +x ./sovereign-foundation/uninstall.sh && ./sovereign-foundation/uninstall.sh 
+# **⚠️ deletes all content under /var/lib/docker ⚠️**
 ```
 
 ---
@@ -108,8 +106,7 @@ chmod +x ./sovereign-foundation/uninstall.sh
 ### Bootstrap
 
 ```bash
-chmod +x ./cluster-provisioning/bootstrap.sh
-./cluster-provisioning/bootstrap.sh
+chmod +x ./cluster-provisioning/bootstrap.sh && ./cluster-provisioning/bootstrap.sh
 ```
 <details>
 <summary>Documentation of Script Steps</summary>
@@ -132,8 +129,7 @@ chmod +x ./cluster-provisioning/bootstrap.sh
 * Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
 * To update the configuration, modify the values.yaml file(s), then apply the uninstall script below and re-bootstrap the cluster:
 ```bash
-chmod +x ./cluster-provisioning/uninstall.sh
-./cluster-provisioning/uninstall.sh
+chmod +x ./cluster-provisioning/uninstall.sh && ./cluster-provisioning/uninstall.sh
 ```
 
 ---
@@ -145,10 +141,10 @@ chmod +x ./cluster-provisioning/uninstall.sh
 ```bash
 cd agentic-orchestration
 mvn clean package
-docker build -t agentic-orchestration:1.0.0 . # set a new version number for each build.
-docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
+sudo docker build -t agentic-orchestration:1.0.0 . # set a new version number for each build.
+sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
-kubectl apply -f agentic-orchestration.yaml # please change version number in file before
+sudo kubectl apply -f agentic-orchestration.yaml # please change version number in file before
 ```
 
 ### Operating

@@ -81,9 +81,9 @@ sudo mv zdb /usr/local/bin/
 echo "✅ Zdb installed."
 echo "-----------------------------------------------------------------------"
 
-echo "🚀 Deployment Complete! Check status and readiness with: kubectl get pods -A"
+echo "🚀 Deployment Complete! Check status and readiness with: sudo kubectl get pods -A"
 echo "-----------------------------------------------------------------------"
-echo "--- 🔟 ⚠️ Wait until all pods are READY, usually ~6 minutes, and then run the following commands manually ---"
-echo "kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct"
-echo "kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda"
+echo "--- 🔟 ⚠️ Wait until all pods are READY 1/1, usually ~6 minutes. Then run the following commands manually ---"
+echo "sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct"
+echo "sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda"
 echo "-----------------------------------------------------------------------"
