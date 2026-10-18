@@ -58,6 +58,9 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
 
+### Latest Test
+- On 2026/10/18 with Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3
+
 ---
 
 ## 🏗 Sovereign Foundation
