@@ -3,23 +3,19 @@
 set -e
 
 echo "--- 1. Boot Configuration & Cgroups Check ---"
-# Check for cgroups v2 or necessary kernel parameters if needed
 echo "✅ Boot configuration checked."
 
 echo "--- 2. Pre-Installation Checks ---"
-# Verify Jetson architecture and environment
 if ! command -v nvidia-smi &> /dev/null && [ ! -f /etc/nv_tegra_release ]; then
     echo "⚠️ Warning: Not running on a Jetson or NVIDIA drivers missing."
 fi
 
 echo "--- 3. Installing NVIDIA Container Runtime & Network Config ---"
-# Ensure package lists are up to date and configure runtimes
 sudo apt-get update
 sudo apt-get install -y nvidia-container-toolkit jq
 
-# Configure containerd for NVIDIA runtime if not already done
-if [ -f /etc/containerd/config.toml ]; then
-    sudo nvidia-container-runtime configure --ctk-oci --set-as-default || true
+if command -v nvidia-ctk &> /dev/null; then
+    sudo nvidia-ctk runtime configure --runtime=containerd || true
     sudo systemctl restart containerd
 fi
 
@@ -28,7 +24,6 @@ sudo mkdir -p /etc/cni/net.d
 sudo mkdir -p /opt/cni/bin
 
 echo "--- 4. Installing K3s ---"
-# Download K3s installer
 curl -sfL https://get.k3s.io -o k3s_install.sh
 chmod +x k3s_install.sh
 
@@ -36,12 +31,16 @@ chmod +x k3s_install.sh
 NODE_IP_DETECTED=$(hostname -I | awk '{print $1}')
 echo "Detected Node IP: $NODE_IP_DETECTED"
 
-echo "🚀 Executing K3s installation (forcing kubectl symlink)..."
-# INSTALL_K3S_SYMLINK=force ensures kubectl is reliably linked in PATH
-INSTALL_K3S_SYMLINK=force sudo ./k3s_install.sh --disable traefik --disable servicelb --node-ip "$NODE_IP_DETECTED"
+echo "🚀 Executing K3s installation (forcing kubectl symlink & permissions)..."
+# INSTALL_K3S_SYMLINK=force ensures kubectl is reliably linked
+# --write-kubeconfig-mode 644 makes the config immediately readable for the user
+INSTALL_K3S_SYMLINK=force sudo ./k3s_install.sh \
+  --disable traefik \
+  --disable servicelb \
+  --node-ip "$NODE_IP_DETECTED" \
+  --write-kubeconfig-mode 644
 rm k3s_install.sh
 
-# Setup Kubeconfig permissions for current user
 mkdir -p "$HOME/.kube"
 if [ -f /etc/rancher/k3s/k3s.yaml ]; then
     sudo cp /etc/rancher/k3s/k3s.yaml "$HOME/.kube/config"
