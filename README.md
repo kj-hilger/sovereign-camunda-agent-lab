@@ -44,22 +44,20 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 
 ## 📋 Prerequisites
 
-### Jetson OS
-- **OS:** Debian-based Linux with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`).
+### Jetson OS 6.x up to date
+- **OS:** Jetson OS with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`). Latest test on 2026/10/18 with Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
 - **Package Manager:** `apt` is available.
-- **Basic Tools:** `curl`, `git`, `gpg`, `sed`, `chromium` are installed.
+- **Basic Tools:** `curl`, `wget`, `git`, `gpg`,`tar`, `sed`, `chromium` are available.
 
-### Additional
+### Additional manual installs
 - **Kubernetes Tools:** `docker`, `kubectl`, also put in PATH.
 - **Dev Tools:** `openjdk-25`, `maven`, (install via `sudo apt install -y openjdk-25-jdk maven`)
-- **Connectivity:** Internet access is required during the bootstrap process.
-- **Repository:** Clone the repository:
+
+### Repository
+- Clone the repository:
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
-
-### Latest Test
-- On 2026/10/18 with Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3
 
 ---
 
@@ -72,6 +70,8 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ```bash
 chmod +x ./sovereign-foundation/install.sh && ./sovereign-foundation/install.sh
 ```
+Note: The bootstrap scripts have been validated on an active JetPack 6.x system. If you run this on a completely fresh JetPack flash and encounter any missing dependencies or script edge-cases, please open an Issue.
+
 <details>
 <summary>Documentation of Script Steps</summary>
 
@@ -159,8 +159,9 @@ The Process Application contains the example Process "Natural Hazard Information
 
 #### Camunda Tasklist
 
+Open in chromium browser:
 ```bash
-http://localhost:8080/tasklist # open in chromium browser
+http://localhost:8080/tasklist
 ```
 Log in with demo/demo, go to Processes View, start an instance, enter a city into the free-text input field, for example "Tokyo" and hit the button.
 After a few seconds, the LLM-generated response will appear automatically in the task form:
@@ -172,8 +173,9 @@ After a few seconds, the LLM-generated response will appear automatically in the
 
 #### Camunda Operate
 
+Open in chromium browser:
 ```bash
-http://localhost:8080/tasklist # open in chromium browser
+http://localhost:8080/operate
 ```
 Log in with demo/demo, go to Processes View, choose the latest instance and observe its flow and variables.
 <p align="left">
