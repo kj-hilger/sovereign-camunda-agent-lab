@@ -33,10 +33,10 @@
 
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
-* **Host Modification:** Installation scripts directly modify host settings (e.g., Docker daemon, CNI).
-* **Enterprise Tooling Omissions:** Lacks GitOps tools (Helm only), pgAdmin, visual observability, and default Camunda security configurations.
+* **Sovereign Foundation:** Installation scripts directly modify host settings (e.g., Docker daemon, CNI).
+* **Cluster Provisioning:** Lacks Build Pipelines, GitOps tooling (Helm only) and UI Observability (pgAdmin, Kubernetes Dashboard).
+* **Camunda Scope:** Lacks Camunda Optimize, due to high resource requirements. Lacks Camunda default security configurations. Camunda Modeler is not available for ARM-based Linux.
 * **Resource Constraints (Edge):** Camunda 8 together with Ollama local LLM requires 80% of the 8 GB memory. Edge profile requires aggressive resource tuning to avoid OOM issues.
-* **Camunda Scope:** Lacks Camunda Optimize, due to high resource requirements. Camunda Modeler is generally not available for ARM-based Linux.
 
 ---
 
@@ -141,10 +141,11 @@ chmod +x ./cluster-provisioning/uninstall.sh && ./cluster-provisioning/uninstall
 ```bash
 cd agentic-orchestration
 mvn clean package
-sudo docker build -t agentic-orchestration:1.0.0 . # set a new version number for each build.
+sudo docker build -t agentic-orchestration:1.0.0 .
 sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
-sudo kubectl apply -f agentic-orchestration.yaml # please change version number in file before
+sudo kubectl apply -f agentic-orchestration.yaml
+# If you want to make a new build, e.g. with a changed .bpmn, set a new version number for each build in the commands and inside agentic-orchestration.yaml.
 ```
 
 ### Operating
