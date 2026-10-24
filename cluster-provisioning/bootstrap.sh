@@ -83,7 +83,6 @@ echo "-----------------------------------------------------------------------"
 
 echo "🚀 Deployment Complete! Check status and readiness with: sudo kubectl get pods -A"
 echo "-----------------------------------------------------------------------"
-echo "--- 🔟 ⚠️ Wait until all pods are READY 1/1, usually ~6 minutes. Then run the following commands manually ---"
+echo "🔟 ⚠️ Wait until all pods are READY 1/1, usually ~5 minutes. Then run the following command manually"
 echo "sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct"
-echo "sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda"
 echo "-----------------------------------------------------------------------"

@@ -12,7 +12,7 @@
   </a>
 </p>
 
-Read the formatted documentation on GitHub Pages: [https://github.com/kj-hilger/sovereign-camunda-agent-lab](https://kj-hilger.github.io/sovereign-camunda-agent-lab/)
+Read formatted documentation on GitHub Pages: [https://github.com/kj-hilger/sovereign-camunda-agent-lab](https://kj-hilger.github.io/sovereign-camunda-agent-lab/)
 
 ## ⚡ Summary
 
@@ -25,13 +25,14 @@ Read the formatted documentation on GitHub Pages: [https://github.com/kj-hilger/
 * [⚡ Summary](#-summary)
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
+* [   Latest Test](#-latesttest)
 * [🏗 Sovereign Foundation](#-sovereign-foundation)
 * [♾️ Cluster Provisioning](#cluster-provisioning)
 * [⚙️ Agentic Orchestration](#agentic-orchestration)
 
 ---
 
-### ⚠️ Known Limitations & Architectural Caveats
+## ⚠️ Known Limitations & Architectural Caveats
 
 While this Lab serves as a rapid local DevOps lab for the enterprise patterns listed above, certain other enterprise patterns are currently simplified:
 
@@ -53,22 +54,22 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 - **Package Manager:** `apt` is available.
 - **Basic Tools:** `curl`, `wget`, `git`, `gpg`,`tar`, `sed`, `chromium` are available.
 
-### Additional actions
+### Additional actions for the Lab
 - **Swap File:** enlarge to 16 GB.
 - **Kubernetes Tools:** install `docker`
 - **Dev Tools:** install `openjdk-25` and `maven`, (via `sudo apt install -y openjdk-25-jdk maven`)
-- **OS Backup:** prepare OS Backup on SD card to be capable to reset and reprovision again. 
-
-### Latest test: 2026/10/24
-- **OS:** Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
-- **Camunda:** 8.10.5
-- **Ollama:** 0.5.11 with qwen2.5:3b-instruct
-
-### Repository
-- Clone the repository:
+- **OS Backup:** prepare OS Backup on SD card to be capable to reset and reprovision again.
+- **Clone the repository:**
 ```bash
 git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ```
+
+---
+
+## Latest test: 2026/10/24
+- **OS:** Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
+- **Camunda:** 8.10.6
+- **Ollama:** 0.34.0 with qwen2.5:3b-instruct
 
 ---
 
@@ -79,7 +80,8 @@ Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
 ### Bootstrap
 
 ```bash
-chmod +x ./sovereign-foundation/install.sh && ./sovereign-foundation/install.sh
+chmod +x ./sovereign-foundation/install.sh # only needed once
+./sovereign-foundation/install.sh
 ```
 Note: The bootstrap scripts have been validated on an active JetPack 6.x system. If you run this on a completely fresh JetPack flash and encounter any missing dependencies or script edge-cases, please open an Issue.
 
@@ -102,14 +104,15 @@ Note: The bootstrap scripts have been validated on an active JetPack 6.x system.
 * The installation configures Docker to run without `sudo` for the current user.
 * Run check script:
 ```bash
-chmod +x ./sovereign-foundation/check.sh && ./sovereign-foundation/check.sh
+chmod +x ./sovereign-foundation/check.sh # only needed once
+./sovereign-foundation/check.sh
 ```
 * Docker and NVIDIA Toolkit will be updated via apt Package Manager.
 * K3s starts automatically on reboot via a systemd service.
 * To perform a full reset and reinstall: run the uninstall script below, reboot the device, and execute the bootstrap script again.
 ```bash
-chmod +x ./sovereign-foundation/uninstall.sh && ./sovereign-foundation/uninstall.sh 
-# **⚠️ deletes all content under /var/lib/docker ⚠️**
+chmod +x ./sovereign-foundation/uninstall.sh  # only needed once
+./sovereign-foundation/uninstall.sh # **⚠️ deletes all content under /var/lib/docker ⚠️**
 ```
 
 ---
@@ -122,7 +125,8 @@ chmod +x ./sovereign-foundation/uninstall.sh && ./sovereign-foundation/uninstall
 ### Bootstrap
 
 ```bash
-chmod +x ./cluster-provisioning/bootstrap.sh && ./cluster-provisioning/bootstrap.sh
+chmod +x ./cluster-provisioning/bootstrap.sh  # only needed once
+./cluster-provisioning/bootstrap.sh
 ```
 <details>
 <summary>Documentation of Script Steps</summary>
@@ -145,7 +149,8 @@ chmod +x ./cluster-provisioning/bootstrap.sh && ./cluster-provisioning/bootstrap
 * Because all dependencies are provisioned locally, the system requires no external communication with Helm repositories. 
 * To update the configuration, modify the values.yaml file(s), then apply the uninstall script below and re-bootstrap the cluster:
 ```bash
-chmod +x ./cluster-provisioning/uninstall.sh && ./cluster-provisioning/uninstall.sh
+chmod +x ./cluster-provisioning/uninstall.sh # only needed once
+./cluster-provisioning/uninstall.sh
 ```
 
 ---
@@ -157,11 +162,13 @@ chmod +x ./cluster-provisioning/uninstall.sh && ./cluster-provisioning/uninstall
 ```bash
 cd agentic-orchestration
 mvn clean package
+# If you want to make a new build, e.g. with a changed .bpmn, set a new version number for each build in the commands and inside agentic-orchestration.yaml.
 sudo docker build -t agentic-orchestration:1.0.0 .
 sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
+# if you have already a deployment agentic-orchestration, please remove it with: sudo kubectl -n camunda delete deployment agentic-orchestration 
 sudo kubectl apply -f agentic-orchestration.yaml
-# If you want to make a new build, e.g. with a changed .bpmn, set a new version number for each build in the commands and inside agentic-orchestration.yaml.
+
 ```
 
 ### Operating
@@ -169,6 +176,11 @@ sudo kubectl apply -f agentic-orchestration.yaml
 The Process Application contains the example Process "Natural Hazard Information".
 
 #### Camunda Tasklist
+
+Execute in terminal:
+```bash
+sudo kubectl port-forward svc/camunda8-zeebe-gateway 8080:8080 -n camunda
+```
 
 Open in chromium browser:
 ```bash

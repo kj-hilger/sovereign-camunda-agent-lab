@@ -1,6 +1,6 @@
 image:
   repository: camunda/camunda-platform
-  tag: "8.9.14"
+  tag: "8.10.6"
   pullPolicy: IfNotPresent
 
 resources:
@@ -14,7 +14,7 @@ resources:
 camunda-platform:
   global:
     image:
-      tag: "8.9.14"
+      tag: "8.10.6"
     security:
       unprotectedAPI: true
 
