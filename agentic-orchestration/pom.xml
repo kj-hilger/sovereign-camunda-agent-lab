@@ -13,10 +13,10 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <java.version>25</java.version>
-        <spring.boot.version>4.0.8</spring.boot.version>
+        <spring.boot.version>4.1.1</spring.boot.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <spring-boot-maven-plugin.version>4.1.1</spring-boot-maven-plugin.version>
-        <camunda-spring-boot-starter.version>8.9.21</camunda-spring-boot-starter.version>
+        <camunda-spring-boot-starter.version>8.10.5</camunda-spring-boot-starter.version>
     </properties>
 
     <dependencies>

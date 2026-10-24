@@ -16,10 +16,10 @@ Read the formatted documentation on GitHub Pages: [https://github.com/kj-hilger/
 
 ## ⚡ Summary
 
-* A lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on NVIDIA Jetson Orin Nano.
-* Provision & operate Camunda 8 with **Tool Calls** to a Local LLM on enterprise-style **Kubernetes** within minutes. Don't worry about internet connection at runtime, token costs, update friction, or API changes.
+* A lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on **NVIDIA Jetson Orin Nano**.
+* Operate Camunda 8 with **Tool Calls** to a Local LLM within enterprise-style **Kubernetes**. Don't worry about internet connection at runtime, token costs, update friction, or API changes.
 * Use this project as a starting point to understand how all components of a **self-managed enterprise setup** interact and prototype further scenarios. 
-* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
+* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective and widely available standard edge device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
@@ -44,14 +44,25 @@ While this Lab serves as a rapid local DevOps lab for the enterprise patterns li
 
 ## 📋 Prerequisites
 
-### Jetson OS 6.x up to date
-- **OS:** Jetson OS with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`). Latest test on 2026/10/18 with Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
+### Hardware
+- **Jetson:** Jetson Orin Nano 8 GB
+- **SSD:** 256 GB M2 SSD.
+
+### OS and software
+- **Jetson OS:** Jetson OS 6.x with NVIDIA Drivers & CUDA Toolkit installed (can be verified by running `nvidia-smi`).
 - **Package Manager:** `apt` is available.
 - **Basic Tools:** `curl`, `wget`, `git`, `gpg`,`tar`, `sed`, `chromium` are available.
 
-### Additional manual installs
-- **Kubernetes Tools:** `docker`
-- **Dev Tools:** `openjdk-25`, `maven`, (install via `sudo apt install -y openjdk-25-jdk maven`)
+### Additional actions
+- **Swap File:** enlarge to 16 GB.
+- **Kubernetes Tools:** install `docker`
+- **Dev Tools:** install `openjdk-25` and `maven`, (via `sudo apt install -y openjdk-25-jdk maven`)
+- **OS Backup:** prepare OS Backup on SD card to be capable to reset and reprovision again. 
+
+### Latest test: 2026/10/24
+- **OS:** Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
+- **Camunda:** 8.10.5
+- **Ollama:** 0.5.11 with qwen2.5:3b-instruct
 
 ### Repository
 - Clone the repository:
@@ -123,9 +134,9 @@ chmod +x ./cluster-provisioning/bootstrap.sh && ./cluster-provisioning/bootstrap
 | 3    | Updating Helm dependencies   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
 | 4    | Creating Namespaces          |                                                                                                                                        |
 | 5    | Setting up PostgreSQL secret | Prompts for password of your choice.                                                                                                   |
-| 6    | Helm Deployment              | Camunda 8.9.14, Ollama 0.5.11                                                                                                                                       |
+| 6    | Helm Deployment              |                                                                                                                                        |
 | 7    | Installing Camunda Tools     | zdb                                                                                                                                    |
-| 8    | Loading LLM                  | qwen2.5:3b-instruct                                                                                                                                    |
+| 8    | Loading LLM                  |                                                                                                                                     |
 
 </details>
 
