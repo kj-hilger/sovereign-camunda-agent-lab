@@ -35,12 +35,25 @@ kubectl create namespace postgresql --dry-run=client -o yaml | kubectl apply -f 
 echo "✅ Namespaces ready."
 echo "-----------------------------------------------------------------------"
 
+echo "--- 5. 🔑 Setting up PostgreSQL secret ---"
+DB_PASSWORD="password"
+echo "Using dummy password: $DB_PASSWORD"
+
+kubectl create secret generic camunda-db-secret \
+  --namespace camunda \
+  --from-literal=postgres-password=$DB_PASSWORD \
+  --dry-run=client -o yaml | kubectl apply -f - --validate=false
+echo "✅ Secret created."
+echo "-----------------------------------------------------------------------"
+
 echo "--- 6. 🚀 Helm deployment ---"
 
 # Deploying PostgreSQL
 helm upgrade --install postgresql ./apps/postgresql \
   --namespace postgresql \
   --set auth.username=camunda \
+  --set auth.password=$DB_PASSWORD \
+  --set auth.postgresPassword=$DB_PASSWORD \
   --set service.type=ClusterIP
 
 # Deploying Ollama
@@ -51,7 +64,9 @@ helm upgrade --install ollama ./apps/ollama \
 helm upgrade --install camunda8 ./apps/camunda8 \
   --namespace camunda \
   --set orchestration.data.secondaryStorage.rdbms.url=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres \
-  --set orchestration.data.secondaryStorage.rdbms.username=camunda
+  --set orchestration.data.secondaryStorage.rdbms.username=camunda \
+  --set orchestration.data.secondaryStorage.rdbms.secret.name=camunda-db-secret \
+  --set orchestration.data.secondaryStorage.rdbms.secret.key=postgres-password
 echo "✅ All applications deployed via Helm."
 echo "-----------------------------------------------------------------------"
 
