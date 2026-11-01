@@ -29,18 +29,31 @@ kubectl delete networkpolicy --all --namespace postgresql || true
 echo "✅ NetworkPolicies removed."
 echo "-----------------------------------------------------------------------"
 
-# 4. Delete Persistent Volume Claims (PVCs)
-echo "🗑️ Deleting Persistent Volume Claims..."
+# 4. Deep Clean Persistent Storage (PVCs & PVs)
+echo "🗑️ Deep Cleaning Persistent Storage..."
+
+# Try to delete PVCs first
 kubectl delete pvc --all --namespace postgresql --ignore-not-found || true
 kubectl delete pvc --all --namespace camunda --ignore-not-found || true
 kubectl delete pvc --all --namespace ollama --ignore-not-found || true
 
-# Remove finalizers for any PVCs stuck in Terminating status
-echo "✨ Clearing finalizers for any stuck PVCs..."
+# Radical Step A: Remove finalizers from all PVCs (handles stuck Terminating status)
+echo "✨ Removing finalizers from stuck PVCs..."
 for pvc in $(kubectl get pvc -A --no-headers | grep Terminating | awk '{print $1}'); do
   kubectl patch pvc $pvc -p '{"metadata":{"finalizers":null}}' --type=merge || true
 done
-echo "✅ PVCs processed."
+
+# Radical Step B: Remove VolumeAttachments (This is the common reason for hanging volumes)
+echo "🔥 Deleting all VolumeAttachments..."
+kubectl delete volumeattachments --all --no-headers || true
+
+# Radical Step C: Remove finalizers from all PVs
+echo "✨ Removing finalizers from PVs..."
+for pv in $(kubectl get pv --no-headers | grep Bound | awk '{print $1}'); do
+  kubectl patch pv $pv -p '{"metadata":{"finalizers":null}}' --type=merge || true
+done
+
+echo "✅ Storage deep clean completed."
 echo "-----------------------------------------------------------------------"
 
 # 5. Delete Namespaces
