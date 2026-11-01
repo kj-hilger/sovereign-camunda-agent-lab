@@ -21,17 +21,23 @@ kubectl delete networkpolicy --all --namespace postgresql || true
 echo "✅ NetworkPolicies removed."
 echo "-----------------------------------------------------------------------"
 
-# 3. Delete Namespaces
+# 3. Delete Persistent Volume Claims (PVCs)
+echo "🗑️ Deleting Persistent Volume Claims..."
+kubectl delete pvc --all --namespace postgresql --ignore-not-found || true
+kubectl delete pvc --all --namespace camunda --ignore-not-found || true
+kubectl delete pvc --all --namespace ollama --ignore-not-found || true
+echo "✅ PVCs removed."
+echo "-----------------------------------------------------------------------"
+
+# 4. Delete Namespaces
 echo "🗑️ Deleting namespaces..."
 kubectl delete namespace camunda --ignore-not-found || true
 kubectl delete namespace ollama --ignore-not-found || true
 kubectl delete namespace postgresql --ignore-not-found || true
-
-sleep 5
-echo "✅ Namespaces removed (or already gone)."
+echo "✅ Namespaces removed."
 echo "-----------------------------------------------------------------------"
 
-# 4. Clean local artifacts
+# 5. Clean local artifacts
 echo "🧹 Cleaning local artifacts..."
 rm -rf apps/camunda8/charts/*
 rm -rf apps/ollama/charts/*
