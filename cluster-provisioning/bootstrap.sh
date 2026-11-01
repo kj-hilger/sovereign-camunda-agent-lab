@@ -35,28 +35,12 @@ kubectl create namespace postgresql --dry-run=client -o yaml | kubectl apply -f 
 echo "✅ Namespaces ready."
 echo "-----------------------------------------------------------------------"
 
-echo "--- 5. 🔑 Setting up PostgreSQL secret ---"
-
-# Prompt for a password
-read -s -p "Enter the password for PostgreSQL: " DB_PASSWORD
-echo ""
-echo "Using password provided."
-
-kubectl create secret generic camunda-db-secret \
-  --namespace camunda \
-  --from-literal=postgres-password=$DB_PASSWORD \
-  --dry-run=client -o yaml | kubectl apply -f - --validate=false
-echo "✅ Secret created."
-echo "-----------------------------------------------------------------------"
-
 echo "--- 6. 🚀 Helm deployment ---"
 
 # Deploying PostgreSQL
 helm upgrade --install postgresql ./apps/postgresql \
   --namespace postgresql \
   --set auth.username=camunda \
-  --set auth.password=$DB_PASSWORD \
-  --set auth.postgresPassword=$DB_PASSWORD \
   --set service.type=ClusterIP
 
 # Deploying Ollama
@@ -67,9 +51,7 @@ helm upgrade --install ollama ./apps/ollama \
 helm upgrade --install camunda8 ./apps/camunda8 \
   --namespace camunda \
   --set orchestration.data.secondaryStorage.rdbms.url=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres \
-  --set orchestration.data.secondaryStorage.rdbms.username=camunda \
-  --set orchestration.data.secondaryStorage.rdbms.secret.name=camunda-db-secret \
-  --set orchestration.data.secondaryStorage.rdbms.secret.key=postgres-password
+  --set orchestration.data.secondaryStorage.rdbms.username=camunda
 echo "✅ All applications deployed via Helm."
 echo "-----------------------------------------------------------------------"
 
@@ -81,7 +63,7 @@ sudo mv zdb /usr/local/bin/
 echo "✅ Zdb installed."
 echo "-----------------------------------------------------------------------"
 
-echo "🚀 Deployment Complete! Check status and readiness with: sudo kubectl get pods -A"
+echo "🚀 Deployment Complete! Check readiness and <ollama-pod-name> with: sudo kubectl get pods -A"
 echo "-----------------------------------------------------------------------"
 echo "⚠️ Wait until all pods are READY 1/1, usually ~5 minutes. Then run the following command manually:"
 echo "sudo kubectl exec -it -n ollama <ollama-pod-name> -- ollama pull qwen2.5:3b-instruct"

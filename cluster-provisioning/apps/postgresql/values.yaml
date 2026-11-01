@@ -22,11 +22,8 @@
 
   postgresql:
     auth:
-      enabled: true
-      pgHbaConfiguration: |
-        local   all             all                                     trust
-        host    all             all             127.0.0.1/32            trust
-        host    all             all             0.0.0.0/0               trust
+      enabled: false
+
     persistence:
       size: 10Gi
 

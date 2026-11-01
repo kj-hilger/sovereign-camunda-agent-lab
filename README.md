@@ -68,7 +68,7 @@ git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 ## 🏗 Sovereign Foundation
 
 * Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
-* **Latest update & test:** 2026/11/01 with Camunda 8.10 and qwen2.5:3b-instruct.
+* **Latest update & test:2026/10/24**: with Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
 
 ### Bootstrap
 
@@ -114,7 +114,7 @@ chmod +x ./sovereign-foundation/uninstall.sh  # only needed once
 
 * Manifest Helm-Charts and scripts to provision the cluster self-managed on top of the Sovereign Foundation layer.
 * Camunda 8 (minimal cluster size, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including local LLM Qwen 2.5:3b-instruct and optimizations for flash attention and KV-cache).
-* **Latest test:** 2026/11/01.
+* **Latest test:2026/11/01**: with Camunda 8.10 and qwen2.5:3b-instruct.
 
 ### Bootstrap
 
@@ -151,6 +151,8 @@ chmod +x ./cluster-provisioning/uninstall.sh # only needed once
 
 ## ⚙️Agentic Orchestration
 
+* **Latest test:2026/11/01**
+
 ### Application Build & Deploy
 
 ```bash
@@ -160,7 +162,7 @@ mvn clean package
 sudo docker build -t agentic-orchestration:1.0.0 .
 sudo docker save agentic-orchestration:1.0.0 -o agentic-orchestration-1.0.0.tar
 sudo k3s ctr images import agentic-orchestration-1.0.0.tar
-# if you have already a deployment agentic-orchestration, please remove it with: sudo kubectl -n camunda delete deployment agentic-orchestration 
+# if you have already a deployment agentic-orchestration, please remove it before with: sudo kubectl -n camunda delete deployment agentic-orchestration 
 sudo kubectl apply -f agentic-orchestration.yaml
 
 ```
