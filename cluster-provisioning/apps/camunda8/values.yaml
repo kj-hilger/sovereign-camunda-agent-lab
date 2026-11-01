@@ -31,12 +31,10 @@ camunda-platform:
       secondaryStorage:
         type: rdbms
         rdbms:
-          database-vendor-id: postgresql
-          secret:
-            existingSecret: camunda-db-secret
-            existingSecretKey: postgres-password
           url: jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres
           username: camunda
+          secret:
+            inlineSecret: password
     resources:
       limits:
         cpu: "2500m"
