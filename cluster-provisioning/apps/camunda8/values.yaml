@@ -31,7 +31,7 @@ camunda-platform:
       secondaryStorage:
         type: rdbms
         rdbms:
-          url: jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres
+          url: jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/camunda
           username: camunda
           secret:
             inlineSecret: password

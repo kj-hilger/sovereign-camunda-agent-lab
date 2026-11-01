@@ -42,6 +42,7 @@ echo "Using dummy password: $DB_PASSWORD"
 kubectl create secret generic camunda-db-secret \
   --namespace camunda \
   --from-literal=postgres-password=$DB_PASSWORD \
+  --from-literal=password=$DB_PASSWORD \
   --dry-run=client -o yaml | kubectl apply -f - --validate=false
 echo "✅ Secret created."
 echo "-----------------------------------------------------------------------"
@@ -63,10 +64,19 @@ helm upgrade --install ollama ./apps/ollama \
 # Deploying Camunda8
 helm upgrade --install camunda8 ./apps/camunda8 \
   --namespace camunda \
-  --set orchestration.data.secondaryStorage.rdbms.url=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/postgres \
+  --set orchestration.data.secondaryStorage.rdbms.url=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/camunda \
   --set orchestration.data.secondaryStorage.rdbms.username=camunda \
   --set orchestration.data.secondaryStorage.rdbms.secret.name=camunda-db-secret \
   --set orchestration.data.secondaryStorage.rdbms.secret.key=postgres-password
+
+# Database User Initialization
+echo "✨ Initializing PostgreSQL user 'camunda'..."
+kubectl exec -it -n postgresql -c postgres -- psql -U postgres -c "CREATE USER camunda WITH PASSWORD 'password';" || true
+kubectl exec -it -n postgresql -c postgres -- psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE camunda TO camunda;" || true
+kubectl exec -it -n postgresql -c postgres -- psql -U postgres -c "GRANT ALL ON SCHEMA public TO camunda;" || true
+kubectl exec -it -n postgresql -c postgres -- psql -U postgres -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO camunda;" || true
+kubectl exec -it -n postgresql -c postgres -- psql -U postgres -c "ALTER DATABASE camunda OWNER TO camunda;" || true
+
 echo "✅ All applications deployed via Helm."
 echo "-----------------------------------------------------------------------"
 

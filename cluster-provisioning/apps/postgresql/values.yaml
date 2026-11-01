@@ -23,6 +23,9 @@
   postgresql:
     auth:
       enabled: true
+      username: camunda
+      password: "password"
+      database: camunda
 
     persistence:
       size: 10Gi
