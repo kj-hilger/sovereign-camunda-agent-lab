@@ -22,7 +22,7 @@
 
   postgresql:
     auth:
-      enabled: false
+      enabled: true
 
     persistence:
       size: 10Gi
