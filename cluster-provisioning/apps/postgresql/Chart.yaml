@@ -5,7 +5,7 @@ description: |
   Configures PostgreSQL.
 type: application
 version: 1.0.0
-appVersion: 18.6.0
+appVersion: 18.11.3
 dependencies:
 - name: postgresql
   version: 18.11.3

@@ -19,13 +19,12 @@ Read formatted documentation on GitHub Pages: [https://github.com/kj-hilger/sove
 * A lightweight, ephemeral **DevOps lab** for rapidly spinning up a complete **Camunda 8 Agentic AI** process application together with an **LLM provider** on **NVIDIA Jetson Orin Nano**.
 * Operate Camunda 8 with **Tool Calls** to a Local LLM within enterprise-style **Kubernetes**. Don't worry about internet connection at runtime, token costs, update friction, or API changes.
 * Use this project as a starting point to understand how all components of a **self-managed enterprise setup** interact and prototype further scenarios. 
-* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective and widely available standard edge device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
+* Optimized for the **NVIDIA Jetson Orin Nano 8 GB**, a compact, cost-effective, and widely available standard edge device that is easy to reset and reprovision. It enables quiet, low-energy operation and is perfectly suited for portable, on-site demonstrations in air-gapped environments.
 
 **Table of Contents**
 * [⚡ Summary](#-summary)
 * [⚠️ Known Limitations & Architectural Caveats](#%EF%B8%8F-known-limitations--architectural-caveats)
 * [📋 Prerequisites](#-prerequisites)
-* [   Latest Test](#-latesttest)
 * [🏗 Sovereign Foundation](#-sovereign-foundation)
 * [♾️ Cluster Provisioning](#cluster-provisioning)
 * [⚙️ Agentic Orchestration](#agentic-orchestration)
@@ -66,16 +65,10 @@ git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 
 ---
 
-## Latest test: 2026/10/24
-- **OS:** Jetson Linux (L4T)-Version: R36.5.2 (Revision 5.2) and JetPack 6.2.3 in mode MAXN SUPER.
-- **Camunda:** 8.10.6
-- **Ollama:** 0.34.0 with qwen2.5:3b-instruct
-
----
-
 ## 🏗 Sovereign Foundation
 
-Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
+* Scripts to install tools for NVIDIA GPU Acceleration, K8s and Helm.
+* **Latest update & test:** 2026/11/01 with Camunda 8.10 and qwen2.5:3b-instruct.
 
 ### Bootstrap
 
@@ -121,6 +114,7 @@ chmod +x ./sovereign-foundation/uninstall.sh  # only needed once
 
 * Manifest Helm-Charts and scripts to provision the cluster self-managed on top of the Sovereign Foundation layer.
 * Camunda 8 (minimal cluster size, but including Camunda Agentic AI Connector), PostgreSQL and Ollama (including local LLM Qwen 2.5:3b-instruct and optimizations for flash attention and KV-cache).
+* **Latest test:** 2026/11/01.
 
 ### Bootstrap
 
