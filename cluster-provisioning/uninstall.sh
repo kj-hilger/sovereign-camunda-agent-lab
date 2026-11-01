@@ -34,7 +34,13 @@ echo "🗑️ Deleting Persistent Volume Claims..."
 kubectl delete pvc --all --namespace postgresql --ignore-not-found || true
 kubectl delete pvc --all --namespace camunda --ignore-not-found || true
 kubectl delete pvc --all --namespace ollama --ignore-not-found || true
-echo "✅ PVCs removed."
+
+# Remove finalizers for any PVCs stuck in Terminating status
+echo "✨ Clearing finalizers for any stuck PVCs..."
+for pvc in $(kubectl get pvc -A --no-headers | grep Terminating | awk '{print $1}'); do
+  kubectl patch pvc $pvc -p '{"metadata":{"finalizers":null}}' --type=merge || true
+done
+echo "✅ PVCs processed."
 echo "-----------------------------------------------------------------------"
 
 # 5. Delete Namespaces
