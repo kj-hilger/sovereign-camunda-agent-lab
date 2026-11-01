@@ -131,10 +131,10 @@ chmod +x ./cluster-provisioning/bootstrap.sh  # only needed once
 | 2    | Adding Helm repositories     |                                                                                                                                        |
 | 3    | Updating Helm dependencies   | This downloads the official charts and places them as archives in the automatically created folders within each application structure. |
 | 4    | Creating Namespaces          |                                                                                                                                        |
-| 5    | Setting up PostgreSQL secret | Prompts for password of your choice.                                                                                                   |
+| 5    | Setting up PostgreSQL secret | Sets PostgreSQL default 'password'.                                                                                                    |
 | 6    | Helm Deployment              |                                                                                                                                        |
 | 7    | Installing Camunda Tools     | zdb                                                                                                                                    |
-| 8    | Loading LLM                  |                                                                                                                                     |
+| 8    | Loading LLM                  |                                                                                                                                        |
 
 </details>
 
