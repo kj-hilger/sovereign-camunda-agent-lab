@@ -1,6 +1,6 @@
 image:
   repository: camunda/camunda-platform
-  tag: "8.9.14"
+  tag: "8.10.7"
   pullPolicy: IfNotPresent
 
 resources:
@@ -14,7 +14,7 @@ resources:
 camunda-platform:
   global:
     image:
-      tag: "8.9.14"
+      tag: "8.10.7"
     security:
       unprotectedAPI: true
 
@@ -30,6 +30,11 @@ camunda-platform:
     data:
       secondaryStorage:
         type: rdbms
+        rdbms:
+          url: jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/camunda
+          username: camunda
+          secret:
+            inlineSecret: password
     resources:
       limits:
         cpu: "2500m"
