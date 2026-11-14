@@ -72,6 +72,7 @@ git clone https://github.com/kj-hilger/sovereign-camunda-agent-lab.git
 
 ### Bootstrap
 
+**⚠️ Warning:** It is highly recommended to create a backup medium of your current OS state before running the install script.                                                                                                                                                                                                               
 ```bash
 chmod +x ./sovereign-foundation/install.sh # only needed once
 ./sovereign-foundation/install.sh
@@ -213,6 +214,12 @@ Monitor resource consumption by executing `kubectl top nodes`, like in this exam
   </a>
 </p>
 Peak CPU consumption during tool calls reached 99%, with a total Agentic AI execution duration of ~15 seconds.
+
+---
+
+## Feedback
+
+Camunda Forum Discussion: https://forum.camunda.io/t/sovereign-camunda-agent-lab-local-llm-orchestration-on-nvidia-jetson-orin-nano/69308/1
 
 ---
 
